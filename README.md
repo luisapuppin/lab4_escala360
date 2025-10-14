@@ -5,3 +5,6 @@ Projeto de Desenvolvimento de Software feito para a disciplina de Laboratório d
 
 ## Objetivo
 Desenvolver um sistema de escala e plantões para clínicas ou hospitais implementando principalmente uma funcionalidade que organize a alocação de profissionais em plantões, considerando substituições, conflitos de horários, alertas e notificações automáticas.
+
+## Linguagem e ferramentas
+O projeto utiliza linguagem Python e o framework Django.
