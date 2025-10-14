@@ -1,0 +1,111 @@
+<!-- Protótipo de Baixa Fidelidade: Tela de Visualização e Gestão de Escalas -->
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ titulo }}</title>
+    <!-- Carrega o Tailwind CSS via CDN para um estilo rápido e responsivo -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        /* Define a fonte Inter (padrão) */
+        body { font-family: 'Inter', sans-serif; background-color: #f7f9fb; }
+    </style>
+</head>
+<body>
+
+    <div class="min-h-screen p-4 sm:p-8">
+        <header class="mb-8">
+            <h1 class="text-3xl font-bold text-gray-800 border-b pb-2">
+                Escala360 - Módulo de Gestão de Escalas
+            </h1>
+            <p class="text-gray-500 mt-1">Visão Consolidada Semanal: {{ start_of_week|date:"d/m" }} - {{ end_of_week|date:"d/m/Y" }}</p>
+        </header>
+
+        <!-- Seção de Alertas e Pendências -->
+        <div class="mb-8">
+            <h2 class="text-xl font-semibold text-red-600 mb-4">Alertas e Pendências</h2>
+            
+            <!-- Alerta de Substituições Pendentes -->
+            {% if substituicoes_pendentes %}
+            <div class="p-4 bg-yellow-100 border-l-4 border-yellow-500 text-yellow-700 rounded-md shadow-md mb-4">
+                <p class="font-bold">{{ substituicoes_pendentes|length }} Solicitações de Substituição Pendentes de Aprovação.</p>
+                <p class="text-sm">Acesse o painel de aprovações para gerenciar.</p>
+            </div>
+            {% else %}
+            <div class="p-4 bg-green-100 border-l-4 border-green-500 text-green-700 rounded-md shadow-md mb-4">
+                <p class="font-bold">Nenhuma substituição pendente.</p>
+            </div>
+            {% endif %}
+
+            <!-- Alerta de Plantões sem Profissional (Simulação da Consulta SQL 2) -->
+            <div class="p-4 bg-red-100 border-l-4 border-red-500 text-red-700 rounded-md shadow-md">
+                <p class="font-bold">Alerta de Cobertura:</p>
+                <p class="text-sm">03 Plantões Sem Cobertura nas Próximas 48h (Simulação).</p>
+            </div>
+        </div>
+        
+        <!-- Calendário de Plantões (Visão Semanal) -->
+        <div class="bg-white p-6 rounded-xl shadow-lg">
+            <h2 class="text-xl font-semibold text-gray-700 mb-4">Escalas da Semana</h2>
+            
+            <!-- Tabela de Escalas (Responsiva) -->
+            <div class="overflow-x-auto">
+                <table class="min-w-full divide-y divide-gray-200">
+                    <thead class="bg-gray-50">
+                        <tr>
+                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider rounded-tl-lg">Data</th>
+                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Horário</th>
+                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Local / Função</th>
+                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Profissional</th>
+                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider rounded-tr-lg">Status</th>
+                        </tr>
+                    </thead>
+                    <tbody class="bg-white divide-y divide-gray-200">
+                        {% for escala in escalas_semanais %}
+                        <tr class="hover:bg-gray-50 {% if escala.plantao.data == hoje %} border-2 border-indigo-200 {% endif %}">
+                            <td class="px-6 py-4 whitespace-nowrap text-sm font-medium {% if escala.plantao.data == hoje %} text-indigo-700 font-bold {% else %} text-gray-900 {% endif %}">
+                                {{ escala.plantao.data|date:"D" }} <br/> <span class="text-xs text-gray-500">{{ escala.plantao.data|date:"d/m" }}</span>
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                                {{ escala.plantao.hora_inicio|time:"H:i" }} - {{ escala.plantao.hora_fim|time:"H:i" }}
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                                <span class="font-semibold">{{ escala.plantao.funcao }}</span> em {{ escala.plantao.local }}
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                                {{ escala.profissional.nome }}
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap">
+                                <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full 
+                                    {% if escala.status == 'ALOCADO' %} bg-blue-100 text-blue-800
+                                    {% elif escala.status == 'SOLICIT_SUBST' %} bg-yellow-100 text-yellow-800
+                                    {% elif escala.status == 'SUBSTITUIDO' %} bg-indigo-100 text-indigo-800
+                                    {% else %} bg-gray-100 text-gray-800
+                                    {% endif %}">
+                                    {{ escala.get_status_display }}
+                                </span>
+                            </td>
+                        </tr>
+                        {% empty %}
+                        <tr>
+                            <td colspan="5" class="px-6 py-8 text-center text-gray-500">
+                                Nenhuma escala alocada para esta semana.
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Botão de Ação (Placeholder) -->
+        <div class="mt-8 text-center">
+            <button class="px-6 py-3 bg-indigo-600 text-white font-semibold rounded-lg shadow-md hover:bg-indigo-700 transition duration-300">
+                + Alocar Novo Plantão
+            </button>
+        </div>
+
+    </div>
+</body>
+</html>

@@ -1,0 +1,67 @@
+# ----------------------------------------------------------------------
+# AMBIENTE VIRTUAL PYTHON (VENV)
+# ----------------------------------------------------------------------
+# Ignora a pasta do ambiente virtual (substitua 'venv' se o nome for outro, como 'env' ou '.venv')
+venv/
+.venv/
+env/
+
+# Arquivos de cache e build
+__pycache__/
+*.pyc
+*.pyd
+*.so
+.Python
+build/
+dist/
+*.egg-info/
+.coverage
+
+# ----------------------------------------------------------------------
+# ARQUIVOS ESPECÍFICOS DO DJANGO
+# ----------------------------------------------------------------------
+# Arquivos estáticos coletados
+# Nunca comite a pasta STATIC_ROOT (que é gerada pelo 'collectstatic')
+/static_root/ 
+/staticfiles/ 
+collectstatic.log
+
+# Arquivos de mídia (uploads de usuários)
+# Nunca comite a pasta MEDIA_ROOT
+/media/
+
+# Banco de dados SQLite
+# Se você usa SQLite (padrão)
+*.sqlite3
+
+# Arquivos de log e depuração
+*.log
+
+# ----------------------------------------------------------------------
+# ARQUIVOS DE CONFIGURAÇÃO LOCAL E SENHAS
+# ----------------------------------------------------------------------
+# Variáveis de ambiente (contêm chaves, senhas, etc.)
+.env
+.flaskenv
+
+# Arquivos de settings (se você tiver um arquivo para settings locais)
+local_settings.py
+
+# ----------------------------------------------------------------------
+# ARQUIVOS DE SISTEMA OPERACIONAL
+# ----------------------------------------------------------------------
+# macOS
+.DS_Store
+
+# Windows
+Thumbs.db
+
+# ----------------------------------------------------------------------
+# ARQUIVOS ESPECÍFICOS DE IDE/EDITOR (VSCODE)
+# ----------------------------------------------------------------------
+# Ignora a pasta de configurações de workspace local do VSCode (se estiver fora do Dev Container)
+# Se você estiver usando o Dev Container, ele gerencia a maioria dessas settings dentro de .devcontainer
+.vscode/
+# A linha acima ignora todas as settings, a menos que você queira comitar
+# as configurações de workspace para o Dev Container (no caso, você incluiria
+# apenas a pasta .devcontainer e ignoraria o resto)
