@@ -1,52 +1,73 @@
 from django.shortcuts import render
-from .services import (
-    sugerir_substitutos,
-    listar_profissionais_com_carga_excedida,
-    consultar_plantoes_sem_profissional,
-    listar_substituicoes_pendentes
-)
-from datetime import datetime, time
 
-def escala_dashboard(request):
+# Create your views here.
+
+from django.http import HttpRequest, HttpResponse
+
+# =========================================================
+# VIEWS DE LOGIN
+# =========================================================
+
+
+def login_page(request: HttpRequest) -> HttpResponse:
     """
-    Simula a execução da lógica de negócios e das consultas SQL,
-    enviando os resultados para o template (e logando no terminal).
+    Renderiza a página de login do Escala360.
+    Por enquanto, é apenas um template estático (sem backend de autenticação).
     """
-    
-    # 1. Teste da Lógica de Sugestão de Substitutos (Plantão ID 1)
-    plantao_teste_id = 1
-    sugestoes = sugerir_substitutos(plantao_teste_id)
-    
-    print("\n--- Resultado: Sugestão de Substitutos ---")
-    print(f"Plantão ID {plantao_teste_id} precisa de substituto. Sugestões: {sugestoes}")
+    # O template deve estar salvo em: seu_app/templates/login_template.html
+    return render(request, 'login.html')
 
-    # 2. Teste da Consulta: Profissionais com Carga Excedida
-    profissionais_excedidos = listar_profissionais_com_carga_excedida()
-    print("\n--- Resultado: Profissionais com Carga Excedida ---")
-    print(f"Excedidos: {profissionais_excedidos}")
+# =========================================================
+# VIEWS DO GESTOR
+# =========================================================
 
-    # 3. Teste da Consulta: Plantões sem Profissional (próximas 48h)
-    plantoes_vagos = consultar_plantoes_sem_profissional(horas_futuras=48)
-    print("\n--- Resultado: Plantões sem Profissional (48h) ---")
-    print(f"Plantões vagos: {plantoes_vagos}")
+def dashboard(request: HttpRequest) -> HttpResponse:
+    """
+    Renderiza a página inicial do Dashboard do Gestor.
+    Rota: /
+    Template: gestor_dashboard.html
+    """
+    # Em um projeto Django real, adicionaríamos aqui a lógica de Contexto (context = {...})
+    # para passar dados ao template.
+    return render(request, 'home_gestor_v1.html')
 
-    # 4. Teste da Consulta: Substituições Pendentes
-    substituicoes_pendentes = listar_substituicoes_pendentes()
-    print("\n--- Resultado: Substituições Pendentes ---")
-    print(f"Substituições pendentes: {substituicoes_pendentes}")
-    
-    # CRIAÇÃO DO CONTEXTO (DICIONÁRIO)
-    # Todos os resultados das consultas SÃO INCLUÍDOS AQUI para serem 
-    # visualizados no template escala_dashboard.html.
-    context = {
-        'current_date': datetime.now(),
-        'sugestoes_substituto': sugestoes,
-        'profissionais_excedidos': profissionais_excedidos,
-        'plantoes_vagos': plantoes_vagos,
-        'substituicoes_pendentes': substituicoes_pendentes,
-        # Você pode adicionar variáveis simples, se necessário:
-        'plantao_analisado_id': plantao_teste_id 
-    }
+def central_aprovacoes(request: HttpRequest) -> HttpResponse:
+    """
+    Renderiza a Central de Aprovações, onde o gestor processa solicitações.
+    Rota: /aprovacoes
+    Template: central_aprovacoes.html
+    """
+    return render(request, 'central_aprovacoes.html')
 
-    # Renderiza o template, enviando o dicionário de contexto
-    return render(request, 'escala_app/escala_dashboard.html', context)
+def escala_consolidada(request: HttpRequest) -> HttpResponse:
+    """
+    Renderiza a Escala Consolidada, mostrando a cobertura de plantões.
+    Rota: /escala
+    Template: escala_consolidada.html
+    """
+    return render(request, 'escala_consolidada.html')
+
+# =========================================================
+# VIEWS DO PROFISSIONAL
+# =========================================================
+
+def minha_escala(request: HttpRequest) -> HttpResponse:
+    """
+    Renderiza a escala individual do profissional logado.
+    Rota: /minha-escala
+    Template: profissional_minha_escala.html
+    """
+    # Lógica: O profissional seria identificado via request.user (autenticação).
+    return render(request, 'home_usuario.html')
+
+def solicitar_substituicao(request: HttpRequest) -> HttpResponse:
+    """
+    Renderiza a tela para o profissional solicitar a troca ou substituição de um plantão.
+    Rota: /solicitar-substituicao
+    Template: solicitar_substituicao.html
+    """
+    # Lógica: Se for um método POST, processaria o formulário de solicitação.
+    return render(request, 'solicitar_substituicao.html')
+
+# Nota: Em um projeto Django real, estas funções seriam importadas em 'urls.py'
+# para mapear as rotas (paths) do projeto.

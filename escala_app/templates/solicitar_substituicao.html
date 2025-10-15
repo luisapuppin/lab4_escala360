@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Escala360 - Solicitar Substituição</title>
+    <!-- Carregando Bootstrap 5.3 -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" xintegrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+    <!-- Ícones Bootstrap -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    
+    <style>
+        :root {
+            --bs-primary: #00796B; /* Teal escuro */
+            --bs-success: #388E3C; /* Verde para sucesso */
+            --bs-warning: #FFC107; /* Amarelo para atenção */
+            --bs-danger: #D32F2F; /* Vermelho para alerta */
+        }
+        .text-primary { color: var(--bs-primary) !important; }
+        .btn-primary { 
+            background-color: var(--bs-primary);
+            border-color: var(--bs-primary);
+            transition: background-color 0.2s, border-color 0.2s;
+        }
+        .btn-primary:hover {
+            background-color: #004D40; /* Teal mais escuro */
+            border-color: #004D40;
+        }
+        .card { border-radius: 0.75rem; }
+        .form-check-input:checked {
+            background-color: var(--bs-primary);
+            border-color: var(--bs-primary);
+        }
+        .form-label { font-weight: 600; }
+    </style>
+</head>
+<body class="bg-light">
+
+    <!-- Container Principal (Centralizado e com Padding) -->
+    <div class="container py-4 py-md-5">
+
+        <div class="row justify-content-center">
+            <div class="col-lg-8">
+                
+                <!-- Card do Formulário -->
+                <div class="card shadow-lg">
+                    <div class="card-header bg-white border-bottom-0 pt-4 px-4">
+                        <h1 class="card-title h3 mb-1 text-primary">
+                            <i class="bi bi-calendar-x me-2"></i> Solicitar Substituição de Plantão
+                        </h1>
+                        <p class="text-muted">Preencha os detalhes para iniciar o processo de troca ou abertura de vaga.</p>
+                    </div>
+                    <div class="card-body p-4 p-md-5">
+
+                        <form id="substitutionForm">
+
+                            <!-- Passo 1: Plantão a ser Substituído -->
+                            <h5 class="mb-3 text-secondary border-bottom pb-2">1. Selecione o Plantão Original</h5>
+                            <div class="mb-4">
+                                <label for="plantaoOriginal" class="form-label">Seu Plantão a ser Coberto</label>
+                                <select class="form-select" id="plantaoOriginal" required>
+                                    <option value="" disabled selected>Escolha na sua escala...</option>
+                                    <option value="1">05/DEZ (Seg) - 08:00h às 18:00h (Emergência)</option>
+                                    <option value="2">12/DEZ (Seg) - 19:00h às 07:00h (CTI Adulto)</option>
+                                    <option value="3">18/DEZ (Dom) - 07:00h às 19:00h (Geral)</option>
+                                    <option value="4">24/DEZ (Sáb) - 08:00h às 18:00h (Férias Aprovadas)</option>
+                                </select>
+                                <div class="form-text">Apenas plantões futuros e ativos são listados.</div>
+                            </div>
+                            
+                            <!-- Alerta de Informação (Regras) -->
+                            <div class="alert alert-info d-flex align-items-center mb-5" role="alert">
+                                <i class="bi bi-info-circle-fill me-2"></i>
+                                <div>
+                                    Regra 3: Solicitações devem ser feitas com **mínimo de 48h de antecedência**. Se for urgente, o Gestor será notificado sobre o risco.
+                                </div>
+                            </div>
+
+                            <!-- Passo 2: Tipo de Substituição -->
+                            <h5 class="mb-3 text-secondary border-bottom pb-2">2. Opções de Substituição</h5>
+                            <div class="mb-4">
+                                <label class="form-label d-block">Você já tem um substituto em mente?</label>
+                                
+                                <div class="form-check form-check-inline">
+                                    <input class="form-check-input" type="radio" name="substitutionType" id="substituteYes" value="specific" checked onclick="toggleSubstituteField(true)">
+                                    <label class="form-check-label" for="substituteYes">
+                                        Sim, quero propor um profissional específico.
+                                    </label>
+                                </div>
+                                <div class="form-check form-check-inline">
+                                    <input class="form-check-input" type="radio" name="substitutionType" id="substituteNo" value="open" onclick="toggleSubstituteField(false)">
+                                    <label class="form-check-label" for="substituteNo">
+                                        Não, abrir como vaga para o sistema.
+                                    </label>
+                                </div>
+                            </div>
+
+                            <!-- Campo de Substituto (Condicional) -->
+                            <div class="mb-4" id="substituteField">
+                                <label for="substituteName" class="form-label">Nome do Profissional Substituto Proposto</label>
+                                <select class="form-select" id="substituteName">
+                                    <option value="" disabled selected>Pesquisar profissional (Ex: Dr. Lucas Mendes)</option>
+                                    <!-- População dinâmica de profissionais compatíveis (simulação) -->
+                                    <option value="10">Dr. Lucas Mendes (CTI Adulto)</option>
+                                    <option value="11">Enf. Patricia Lima (Emergência)</option>
+                                    <option value="12">Dr. Bruno K. (Geral)</option>
+                                </select>
+                                <div class="form-text text-danger">A Regra 4 exige compatibilidade de cargo e setor.</div>
+                            </div>
+                            
+                            <!-- Passo 3: Motivo -->
+                            <h5 class="mb-3 text-secondary border-bottom pb-2">3. Motivo e Observações</h5>
+                            <div class="mb-4">
+                                <label for="reason" class="form-label">Motivo da Solicitação</label>
+                                <textarea class="form-control" id="reason" rows="3" placeholder="Ex: Curso de atualização, problema de saúde, compromisso familiar inadiável." required></textarea>
+                            </div>
+
+                            <!-- Botão de Envio -->
+                            <div class="d-grid gap-2 mt-4">
+                                <button type="submit" class="btn btn-primary btn-lg shadow-sm">
+                                    <i class="bi bi-send-check me-2"></i> Enviar Solicitação para Aprovação do Gestor
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+
+                <!-- Aviso de Processamento -->
+                <div id="processingAlert" class="alert alert-success mt-4 p-3 shadow-sm d-none" role="alert">
+                    <h5 class="alert-heading h5 mb-2"><i class="bi bi-check-circle-fill me-2"></i> Solicitação Enviada!</h5>
+                    <p class="mb-0">Sua solicitação foi enviada para o Gestor. Você será notificado sobre a aprovação. Acompanhe o status em **Minha Escala**.</p>
+                </div>
+                
+                <!-- Exemplo de Modal (Substitui o alert()) -->
+                <div class="modal fade" id="successModal" tabindex="-1" aria-labelledby="successModalLabel" aria-hidden="true">
+                    <div class="modal-dialog modal-sm">
+                        <div class="modal-content">
+                            <div class="modal-header border-0 pb-0">
+                                <h5 class="modal-title text-success" id="successModalLabel"><i class="bi bi-check-lg me-2"></i> Sucesso</h5>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                            </div>
+                            <div class="modal-body pt-1">
+                                Solicitação registrada com sucesso!
+                            </div>
+                            <div class="modal-footer border-0 pt-0">
+                                <button type="button" class="btn btn-primary w-100" data-bs-dismiss="modal">Fechar</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+    </div>
+
+    <!-- Script Bootstrap -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" xintegrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            
+            const form = document.getElementById('substitutionForm');
+            
+            // Adiciona listener para submissão do formulário
+            form.addEventListener('submit', function(event) {
+                event.preventDefault();
+                event.stopPropagation();
+                
+                // Validação básica (Bootstrap)
+                if (form.checkValidity() === false) {
+                    form.classList.add('was-validated');
+                    return;
+                }
+                
+                // Simulação de envio
+                console.log('Dados do formulário enviados.');
+                
+                // Mostrar alerta de processamento
+                const alert = document.getElementById('processingAlert');
+                alert.classList.remove('d-none');
+                
+                // Resetar o formulário após 1.5s e mostrar modal
+                setTimeout(() => {
+                    form.reset();
+                    form.classList.remove('was-validated');
+                    alert.classList.add('d-none');
+                    
+                    const successModal = new bootstrap.Modal(document.getElementById('successModal'));
+                    successModal.show();
+                }, 1500);
+            });
+            
+            // Inicializa a visibilidade do campo de substituto
+            toggleSubstituteField(document.getElementById('substituteYes').checked);
+        });
+
+        /**
+         * Alterna a visibilidade do campo de seleção de substituto.
+         * @param {boolean} isSpecific - True se o usuário vai propor um nome.
+         */
+        function toggleSubstituteField(isSpecific) {
+            const field = document.getElementById('substituteField');
+            const select = document.getElementById('substituteName');
+
+            if (isSpecific) {
+                field.classList.remove('d-none');
+                select.setAttribute('required', 'required');
+            } else {
+                field.classList.add('d-none');
+                select.removeAttribute('required');
+            }
+        }
+    </script>
+</body>
+</html>

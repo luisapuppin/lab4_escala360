@@ -1,0 +1,300 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Escala360 - Dashboard</title>
+    <!-- Carregando Bootstrap 5 CSS CDN -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" xintegrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+    <!-- Font Awesome para ícones profissionais (ex: Hospitais/Saúde) -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" xintegrity="sha512-SnH5WK+bZxgPHs44uWIX+LLMDJz9T8o6p+C0E5t4J2E0g4O7R4LwYxG1v1Dk+5lB5o5D1v6d1zG3C1y5w1Z2Vw==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+
+    <!-- Estilos Customizados para o tema Escala360 (Teal) -->
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap');
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f8f9fa; /* Fundo mais claro */
+        }
+        .bg-escala-primary {
+            background-color: #00796B; /* Teal Principal */
+        }
+        .text-escala-primary {
+            color: #00796B;
+        }
+        .btn-escala-action {
+            background-color: #00796B;
+            border-color: #00796B;
+            transition: all 0.2s;
+        }
+        .btn-escala-action:hover {
+            background-color: #004D40;
+            border-color: #004D40;
+            transform: translateY(-1px);
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        .sidebar {
+            min-height: 100vh;
+            background-color: #212529; /* Dark Sidebar */
+            color: white;
+            padding-top: 20px;
+        }
+        .nav-link {
+            color: #adb5bd;
+            transition: color 0.2s, background-color 0.2s;
+            border-radius: .5rem;
+        }
+        .nav-link:hover {
+            color: white;
+            background-color: #495057;
+        }
+        .nav-link.active {
+            color: white;
+            background-color: #00796B;
+            font-weight: 600;
+        }
+        /* Estilo para cartões de Plantão em destaque */
+        .plantao-card {
+            border-left: 5px solid #00796B;
+            border-radius: 0.5rem;
+            box-shadow: 0 2px 4px rgba(0,0,0,.05);
+        }
+        /* Estilo para badges de status */
+        .badge-pendente {
+            background-color: #ffc107; /* Amarelo */
+            color: #333;
+        }
+        .badge-aprovado {
+            background-color: #28a745; /* Verde */
+        }
+        .alert-substituicao {
+             border-left: 5px solid #dc3545; /* Vermelho para urgência */
+        }
+    </style>
+</head>
+<body>
+
+    <div class="d-flex">
+        <!-- 1. Sidebar de Navegação (Menu Fixo) -->
+        <nav id="sidebar" class="sidebar p-3 d-none d-md-block">
+            <h2 class="h4 text-center mb-4">
+                Escala<span class="text-escala-primary">360</span>
+            </h2>
+            <ul class="nav nav-pills flex-column mb-auto">
+                <li class="nav-item mb-2">
+                    <a href="#" class="nav-link active" aria-current="page">
+                        <i class="fas fa-chart-line me-2"></i> Dashboard
+                    </a>
+                </li>
+                <li class="nav-item mb-2">
+                    <a href="#" class="nav-link">
+                        <i class="fas fa-calendar-alt me-2"></i> Minha Escala
+                    </a>
+                </li>
+                <li class="nav-item mb-2">
+                    <a href="#" class="nav-link">
+                        <i class="fas fa-exchange-alt me-2"></i> Substituições
+                    </a>
+                </li>
+                <li class="nav-item mb-2">
+                    <a href="#" class="nav-link">
+                        <i class="fas fa-user-circle me-2"></i> Perfil e Férias
+                    </a>
+                </li>
+            </ul>
+
+            <hr class="text-secondary">
+
+            <!-- Rodapé da Sidebar: Info do Usuário -->
+            <div class="text-center">
+                <p class="mb-1 fw-bold text-white">Dr(a). [Nome Usuário]</p>
+                <p class="small text-secondary">[Cargo/Setor]</p>
+                <a href="#" class="btn btn-sm btn-outline-light mt-2" onclick="showMessage('Funcionalidade de Logout estática.', 'info')">
+                    <i class="fas fa-sign-out-alt me-1"></i> Sair
+                </a>
+            </div>
+        </nav>
+        <!-- Fim da Sidebar -->
+
+        <!-- 2. Conteúdo Principal do Dashboard -->
+        <div class="flex-grow-1 p-3 p-md-5">
+            <header class="mb-4 d-flex justify-content-between align-items-center">
+                <h1 class="h3 fw-bold text-gray-800">
+                    Bem-vindo(a), Dr(a). [Nome Usuário]!
+                </h1>
+                <button 
+                    class="btn btn-escala-action d-none d-sm-block"
+                    onclick="showMessage('Funcionalidade estática: Alocação Automática.', 'info')"
+                >
+                    <i class="fas fa-plus-circle me-1"></i> Solicitar Substituição
+                </button>
+            </header>
+
+            <div class="row g-4">
+                <!-- COLUNA 1: Visão Geral e Alertas -->
+                <div class="col-lg-8">
+                    
+                    <!-- MÓDULO A: Alertas e Substituições Pendentes (Ação Imediata) -->
+                    <h2 class="h5 fw-bold mb-3 mt-0">
+                        <i class="fas fa-bell me-2 text-danger"></i> Ações Pendentes
+                        <span class="badge bg-danger rounded-pill ms-2">2</span>
+                    </h2>
+                    
+                    <div class="card shadow-sm mb-4 alert-substituicao">
+                        <div class="card-body">
+                            <h5 class="card-title fw-bold text-danger">Substituição Pendente de Aprovação</h5>
+                            <p class="card-text">
+                                Dr. João Silva solicitou que você o substitua no **Plantão de Tarde (14h-20h)** em Pediatria, no dia **15/08**.
+                            </p>
+                            <a href="#" class="btn btn-sm btn-danger me-2" onclick="showMessage('Funcionalidade estática: Aprovar.', 'success')">
+                                <i class="fas fa-check-circle me-1"></i> Aprovar
+                            </a>
+                            <a href="#" class="btn btn-sm btn-outline-secondary" onclick="showMessage('Funcionalidade estática: Rejeitar.', 'warning')">
+                                <i class="fas fa-times-circle me-1"></i> Rejeitar
+                            </a>
+                        </div>
+                    </div>
+
+                    <div class="card shadow-sm mb-5 alert-substituicao">
+                        <div class="card-body">
+                            <h5 class="card-title fw-bold text-danger">Confirmação de Plantão Amanhã</h5>
+                            <p class="card-text">
+                                Lembrete: Seu plantão na **Emergência** de **08:00 às 14:00** amanhã (14/08) está confirmado. Confirme sua presença até às 22h de hoje.
+                            </p>
+                            <a href="#" class="btn btn-sm btn-danger me-2" onclick="showMessage('Funcionalidade estática: Confirmar Presença.', 'success')">
+                                <i class="fas fa-clipboard-check me-1"></i> Confirmar
+                            </a>
+                        </div>
+                    </div>
+
+
+                    <!-- MÓDULO B: Seus Próximos Plantões -->
+                    <h2 class="h5 fw-bold mb-3">
+                        <i class="fas fa-clock me-2 text-escala-primary"></i> Seus Próximos Plantões
+                    </h2>
+                    
+                    <div class="row g-3">
+                        <!-- Plantão 1 -->
+                        <div class="col-md-6">
+                            <div class="card plantao-card bg-white shadow-sm p-3">
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <span class="badge rounded-pill bg-escala-primary">Hoje, 13/08</span>
+                                    <span class="text-escala-primary fw-bold">08:00 - 14:00</span>
+                                </div>
+                                <h6 class="mt-2 mb-0 fw-bold">Plantão CTI Adulto</h6>
+                                <p class="small text-muted mb-0">Hospital Central - Bloco B</p>
+                                <a href="#" class="small text-decoration-none text-escala-primary mt-2" onclick="showMessage('Funcionalidade estática: Detalhes do Plantão.', 'info')">
+                                    Ver Detalhes <i class="fas fa-arrow-right ms-1"></i>
+                                </a>
+                            </div>
+                        </div>
+
+                        <!-- Plantão 2 -->
+                        <div class="col-md-6">
+                            <div class="card plantao-card bg-white shadow-sm p-3">
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <span class="badge rounded-pill bg-secondary">Amanhã, 14/08</span>
+                                    <span class="text-secondary fw-bold">20:00 - 08:00</span>
+                                </div>
+                                <h6 class="mt-2 mb-0 fw-bold">Plantão de Emergência</h6>
+                                <p class="small text-muted mb-0">Unidade de Pronto Atendimento</p>
+                                <a href="#" class="small text-decoration-none text-escala-primary mt-2" onclick="showMessage('Funcionalidade estática: Detalhes do Plantão.', 'info')">
+                                    Ver Detalhes <i class="fas fa-arrow-right ms-1"></i>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- COLUNA 2: Estatísticas e Links Rápidos -->
+                <div class="col-lg-4">
+                    
+                    <!-- Estatísticas Rápidas -->
+                    <h2 class="h5 fw-bold mb-3 mt-0">
+                        <i class="fas fa-chart-pie me-2 text-primary"></i> Resumo Mensal
+                    </h2>
+
+                    <div class="card shadow-sm mb-4">
+                        <div class="card-body">
+                            <div class="d-flex justify-content-between align-items-center mb-2">
+                                <span class="fw-bold">Plantões Realizados (Mês)</span>
+                                <span class="h4 mb-0 text-escala-primary">12</span>
+                            </div>
+                            <div class="progress" role="progressbar" aria-label="Plantões Realizados" aria-valuenow="75" aria-valuemin="0" aria-valuemax="100">
+                                <div class="progress-bar bg-escala-primary" style="width: 75%"></div>
+                            </div>
+                            <p class="small text-muted mt-1">75% da sua carga horária mensal</p>
+                        </div>
+                    </div>
+
+                    <!-- Módulo de Substituições -->
+                    <h2 class="h5 fw-bold mb-3">
+                        <i class="fas fa-exchange-alt me-2 text-warning"></i> Status de Substituições
+                    </h2>
+                    
+                    <div class="card shadow-sm mb-4">
+                        <div class="card-body">
+                            <div class="d-flex justify-content-between align-items-center mb-3">
+                                <span class="fw-bold">Minhas Solicitações</span>
+                                <span class="badge rounded-pill badge-pendente">3 Pendentes</span>
+                            </div>
+                            <div class="d-flex justify-content-between align-items-center mb-3">
+                                <span class="fw-bold">Para Meu Preenchimento</span>
+                                <span class="badge rounded-pill bg-success">1 Aprovado</span>
+                            </div>
+                            <a href="#" class="btn btn-sm btn-outline-secondary w-100 mt-2">
+                                Gerenciar Todas <i class="fas fa-arrow-right ms-1"></i>
+                            </a>
+                        </div>
+                    </div>
+                    
+                </div>
+            </div>
+
+        </div>
+        <!-- Fim do Conteúdo Principal -->
+
+    </div>
+
+    <!-- Container de Mensagens Personalizado (Substitui o alert()) -->
+    <div id="messageContainer" style="position: fixed; bottom: 1rem; right: 1rem; z-index: 1050; transition: opacity 0.3s; opacity: 0; pointer-events: none;">
+        <div id="messageBox" class="p-3 rounded shadow-lg text-white"></div>
+    </div>
+
+    <!-- Script para Mensagens (Substitui o alert() do JS puro) -->
+    <script>
+        /**
+         * Exibe uma mensagem personalizada no canto inferior direito.
+         * @param {string} message - A mensagem a ser exibida.
+         * @param {string} type - Tipo de mensagem (info, success, error, warning).
+         */
+        function showMessage(message, type = 'info') {
+            const container = document.getElementById('messageContainer');
+            const box = document.getElementById('messageBox');
+
+            // Define a cor de fundo com base no tipo
+            let bgColor = 'bg-info';
+            if (type === 'success') bgColor = 'bg-success';
+            if (type === 'error') bgColor = 'bg-danger';
+            if (type === 'warning') bgColor = 'bg-warning';
+
+            // Aplica classes Bootstrap e estilos customizados
+            box.className = `p-3 rounded shadow-lg text-white ${bgColor}`;
+            box.textContent = message;
+
+            // Mostra a mensagem
+            container.style.opacity = '1';
+            container.style.pointerEvents = 'auto';
+
+            // Esconde a mensagem após 4 segundos
+            setTimeout(() => {
+                container.style.opacity = '0';
+                container.style.pointerEvents = 'none';
+            }, 4000);
+        }
+    </script>
+
+    <!-- Carregando Bootstrap 5 JS CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" xintegrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
+</body>
+</html>

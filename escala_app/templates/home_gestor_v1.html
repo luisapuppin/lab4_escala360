@@ -1,0 +1,503 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Escala360 - Meu Dashboard</title>
+    <!-- Carregando Tailwind CSS para estilo -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Font Inter -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;800&display=swap" rel="stylesheet">
+    <!-- Lucide Icons (Ícones modernos e leves) -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+
+    <style>
+        /* Configuração de classes Tailwind customizadas */
+        :root {
+            --color-primary: #00796B; /* Teal escuro */
+            --color-secondary: #004D40; /* Teal ainda mais escuro */
+            --color-danger: #D32F2F; /* Vermelho para alerta */
+            --color-warning: #FFC107; /* Amarelo para substituição */
+        }
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f3f4f6;
+        }
+        .text-primary { color: var(--color-primary); }
+        .bg-primary { background-color: var(--color-primary); }
+        .btn-primary {
+            background-color: var(--color-primary);
+            transition: all 0.2s;
+        }
+        .btn-primary:hover {
+            background-color: var(--color-secondary);
+        }
+
+        /* Estilo do calendário */
+        .calendar-day {
+            min-height: 80px;
+            cursor: pointer;
+        }
+        .calendar-day:hover {
+            background-color: #f9f9f9;
+        }
+        .shift-badge {
+            font-size: 0.7rem;
+            line-height: 1rem;
+            padding: 2px 6px;
+            border-radius: 9999px; /* Full rounded */
+        }
+        .shift-badge.own {
+            background-color: #BBDEFB; /* Light Blue */
+            color: #1976D2; /* Dark Blue */
+            font-weight: 600;
+        }
+        .shift-badge.substitute {
+            background-color: #FFE0B2; /* Light Orange */
+            color: #F57C00; /* Dark Orange */
+        }
+        .shift-badge.pending {
+            background-color: #FFCDD2; /* Light Red */
+            color: var(--color-danger);
+        }
+        .shift-badge.approved {
+            background-color: #C8E6C9; /* Light Green */
+            color: var(--color-primary);
+        }
+        
+        /* Modal de Mensagem customizado */
+        #messageModal {
+            transition: opacity 0.3s ease-in-out;
+            pointer-events: none;
+        }
+        #messageModal.active {
+            opacity: 1;
+            pointer-events: auto;
+        }
+    </style>
+</head>
+<body class="p-4 md:p-8">
+
+    <!-- Container Principal do Dashboard -->
+    <div class="max-w-7xl mx-auto">
+        
+        <!-- Cabeçalho e Informações do Usuário -->
+        <header class="mb-8 p-4 bg-white shadow-lg rounded-xl flex flex-col md:flex-row justify-between items-start md:items-center">
+            <div>
+                <h1 class="text-3xl font-extrabold text-gray-800">
+                    <i data-lucide="layout-dashboard" class="inline-block w-8 h-8 mr-2 text-primary"></i>
+                    Meu Dashboard Profissional
+                </h1>
+                <p class="text-lg text-gray-600 mt-1">
+                    Bem-vindo(a), <span id="userName" class="font-semibold text-primary">Dr. João da Silva</span>.
+                </p>
+                <p class="text-sm text-gray-500">
+                    Cargo: <span id="userRole">Médico Plantonista (Emergência)</span> - ID: <span id="userId">349C-E2A1-0F88</span>
+                </p>
+            </div>
+            
+            <!-- Botão de Ação Principal -->
+            <button class="btn-primary text-white py-2 px-6 rounded-lg font-bold shadow-md mt-4 md:mt-0" onclick="openSubstitutionModal()">
+                <i data-lucide="calendar-plus" class="inline-block w-5 h-5 mr-1"></i>
+                Solicitar Substituição
+            </button>
+        </header>
+
+        <!-- Cartões de Métricas (Regra 1 - Carga Horária) -->
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+            
+            <!-- Carga Horária Semanal -->
+            <div class="bg-white p-6 rounded-xl shadow-lg border-t-4 border-primary">
+                <div class="flex items-center justify-between">
+                    <p class="text-lg font-semibold text-gray-600">Carga Horária Atual (Semanal)</p>
+                    <i data-lucide="clock" class="text-primary w-6 h-6"></i>
+                </div>
+                <div class="mt-2">
+                    <span id="currentHours" class="text-4xl font-extrabold text-gray-900">32h</span>
+                    <span class="text-gray-500"> / 40h</span>
+                </div>
+                <div id="statusLoad" class="text-sm mt-1 font-medium text-primary">
+                    Dentro do Limite Máximo.
+                </div>
+            </div>
+            
+            <!-- Substituições Pendentes -->
+            <div class="bg-white p-6 rounded-xl shadow-lg border-t-4 border-warning">
+                <div class="flex items-center justify-between">
+                    <p class="text-lg font-semibold text-gray-600">Minhas Substituições Pendentes</p>
+                    <i data-lucide="alert-triangle" class="text-amber-500 w-6 h-6"></i>
+                </div>
+                <div class="mt-2">
+                    <span class="text-4xl font-extrabold text-gray-900">2</span>
+                    <span class="text-gray-500"> plantões</span>
+                </div>
+                <p class="text-sm mt-1 font-medium text-amber-500">
+                    Aguardando aprovação do supervisor.
+                </p>
+            </div>
+
+            <!-- Plantões Próximos -->
+            <div class="bg-white p-6 rounded-xl shadow-lg border-t-4 border-gray-400">
+                <div class="flex items-center justify-between">
+                    <p class="text-lg font-semibold text-gray-600">Meu Próximo Plantão</p>
+                    <i data-lucide="calendar-check" class="text-gray-500 w-6 h-6"></i>
+                </div>
+                <div class="mt-2">
+                    <span class="text-2xl font-extrabold text-gray-900">Segunda-feira, 28/Ago</span>
+                </div>
+                <p class="text-sm mt-1 font-medium text-gray-600">
+                    Emergência | 08:00 - 18:00h
+                </p>
+            </div>
+        </div>
+
+        <!-- Escala Mensal (Regra 6) -->
+        <div class="bg-white p-6 rounded-xl shadow-lg">
+            <h2 class="text-2xl font-bold mb-4 text-gray-800">Minha Escala de Agosto</h2>
+            
+            <!-- Navegação e Visão -->
+            <div class="flex justify-between items-center mb-4">
+                <div class="flex space-x-2">
+                    <button class="p-2 rounded-full hover:bg-gray-100" onclick="showMessage('Mês anterior estático', 'info')">
+                        <i data-lucide="chevron-left" class="w-5 h-5 text-gray-600"></i>
+                    </button>
+                    <span class="text-xl font-semibold">Agosto 2024</span>
+                    <button class="p-2 rounded-full hover:bg-gray-100" onclick="showMessage('Mês posterior estático', 'info')">
+                        <i data-lucide="chevron-right" class="w-5 h-5 text-gray-600"></i>
+                    </button>
+                </div>
+                <button class="text-sm text-gray-600 hover:text-primary transition" onclick="showMessage('Visão semanal estática', 'info')">
+                    <i data-lucide="calendar" class="inline-block w-4 h-4 mr-1"></i> Mudar para Visão Semanal
+                </button>
+            </div>
+            
+            <!-- Tabela do Calendário -->
+            <div class="grid grid-cols-7 text-center font-semibold text-gray-500 border-b pb-2">
+                <div>DOM</div>
+                <div>SEG</div>
+                <div>TER</div>
+                <div>QUA</div>
+                <div>QUI</div>
+                <div>SEX</div>
+                <div>SÁB</div>
+            </div>
+
+            <!-- Células do Calendário -->
+            <div id="calendar-grid" class="grid grid-cols-7 gap-1">
+                <!-- Conteúdo do calendário será gerado pelo JS -->
+            </div>
+        </div>
+    </div>
+
+    <!-- --------------------------------------- -->
+    <!-- MODAL DE SOLICITAÇÃO DE SUBSTITUIÇÃO -->
+    <!-- --------------------------------------- -->
+    <div id="substitutionModal" class="fixed inset-0 bg-gray-900 bg-opacity-75 hidden items-center justify-center p-4 z-50">
+        <div class="bg-white rounded-xl shadow-2xl w-full max-w-2xl p-6 relative">
+            
+            <!-- Cabeçalho do Modal -->
+            <div class="flex justify-between items-center border-b pb-3 mb-4">
+                <h3 class="text-2xl font-bold text-primary">Solicitar Substituição</h3>
+                <button class="text-gray-400 hover:text-gray-600" onclick="closeSubstitutionModal()">
+                    <i data-lucide="x" class="w-6 h-6"></i>
+                </button>
+            </div>
+
+            <!-- Formulário de Solicitação -->
+            <form id="substitutionForm">
+                <div class="mb-4">
+                    <label for="plantaoSelect" class="block text-sm font-medium text-gray-700 mb-1">Plantão que deseja ser substituído:</label>
+                    <select id="plantaoSelect" class="w-full border border-gray-300 rounded-lg p-2 focus:ring-primary focus:border-primary" onchange="loadSubstitutes()">
+                        <option value="">-- Selecione seu plantão --</option>
+                        <option value="1">28/Ago (Seg) | Emergência | 08h-18h</option>
+                        <option value="2">04/Set (Seg) | CTI Adulto | 19h-07h</option>
+                        <option value="3">15/Set (Sex) | Pediatria | 07h-17h</option>
+                    </select>
+                </div>
+
+                <!-- Painel de Sugestões de Substitutos (Regra 4) -->
+                <div id="substitutesPanel" class="hidden mt-6 p-4 border border-gray-200 rounded-lg bg-gray-50">
+                    <h4 class="text-lg font-bold mb-3 text-gray-800 flex items-center">
+                        <i data-lucide="user-check" class="w-5 h-5 mr-2 text-primary"></i>
+                        Sugestões de Substitutos (Regra 4)
+                    </h4>
+                    <p class="text-sm text-gray-600 mb-3">
+                        O sistema sugere 3 profissionais disponíveis com menor carga horária acumulada.
+                    </p>
+                    
+                    <!-- Lista de Sugestões -->
+                    <div id="substitutesList" class="space-y-3">
+                        <!-- Lista preenchida via JS -->
+                    </div>
+                </div>
+
+                <!-- Campo Adicional (Opcional) -->
+                <div class="mt-6">
+                    <label for="justification" class="block text-sm font-medium text-gray-700 mb-1">Motivo da Substituição (Opcional):</label>
+                    <textarea id="justification" rows="2" class="w-full border border-gray-300 rounded-lg p-2 focus:ring-primary focus:border-primary" placeholder="Ex: Compromisso familiar inadiável..."></textarea>
+                </div>
+
+                <!-- Botão de Envio e Aviso de Antecedência (Regra 3) -->
+                <div class="mt-6 flex justify-end items-center">
+                    <p id="antecedenceWarning" class="text-sm text-danger font-semibold mr-4 hidden">
+                         <i data-lucide="clock" class="inline-block w-4 h-4 mr-1"></i>
+                        ATENÇÃO: Este plantão está a menos de 12h. Exige aprovação extra.
+                    </p>
+                    <button type="submit" class="btn-primary text-white py-2 px-6 rounded-lg font-bold shadow-md disabled:bg-gray-400" disabled id="submitSubstitution">
+                        Enviar Pedido de Substituição
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+
+    <!-- --------------------------------------- -->
+    <!-- MODAL DE MENSAGENS (Substitui alert()) -->
+    <!-- --------------------------------------- -->
+    <div id="messageModal" class="fixed inset-0 flex items-center justify-center bg-gray-800 bg-opacity-75 z-[60]" style="opacity: 0;">
+        <div class="bg-white p-6 rounded-xl shadow-xl max-w-sm w-full transform transition-transform duration-300 scale-95">
+            <h4 id="messageTitle" class="text-xl font-bold mb-3 text-primary">Aviso</h4>
+            <p id="messageText" class="text-gray-700 mb-4"></p>
+            <button class="w-full btn-primary text-white py-2 rounded-lg" onclick="closeMessageModal()">
+                Entendi
+            </button>
+        </div>
+    </div>
+
+    <script>
+        // Inicializa Lucide Icons
+        lucide.createIcons();
+
+        // Dados simulados do calendário para o mês de Agosto
+        const DADOS_PLANTÕES = [
+            { day: 1, type: 'off', status: 'off', desc: 'Folga' },
+            { day: 2, type: 'off', status: 'off', desc: 'Folga' },
+            { day: 3, type: 'off', status: 'off', desc: 'Folga' },
+            { day: 4, type: 'off', status: 'off', desc: 'Folga' },
+            { day: 5, type: 'own', status: 'ok', desc: 'Geral | 10h-20h' },
+            { day: 6, type: 'off', status: 'off', desc: 'Folga' },
+            { day: 7, type: 'own', status: 'ok', desc: 'Emergência | 08h-18h' },
+            { day: 8, type: 'off', status: 'off', desc: 'Folga' },
+            { day: 9, type: 'own', status: 'ok', desc: 'CTI Adulto | 19h-07h' },
+            { day: 10, type: 'off', status: 'off', desc: 'Folga' },
+            { day: 11, type: 'off', status: 'off', desc: 'Folga' },
+            { day: 12, type: 'own', status: 'ok', desc: 'Emergência | 08h-18h' },
+            { day: 13, type: 'off', status: 'off', desc: 'Folga' },
+            { day: 14, type: 'own', status: 'substitute', desc: 'Pediatria | 14h-22h (Substituindo Dra. C.)' },
+            { day: 15, type: 'off', status: 'off', desc: 'Folga' },
+            { day: 16, type: 'own', status: 'pending', desc: 'Emergência | 08h-18h (Aguard. Subst.)' },
+            { day: 17, type: 'off', status: 'off', desc: 'Folga' },
+            { day: 18, type: 'off', status: 'off', desc: 'Folga' },
+            { day: 19, type: 'own', status: 'ok', desc: 'Geral | 10h-20h' },
+            { day: 20, type: 'off', status: 'off', desc: 'Folga' },
+            { day: 21, type: 'own', status: 'ok', desc: 'Emergência | 08h-18h' },
+            { day: 22, type: 'off', status: 'off', desc: 'Folga' },
+            { day: 23, type: 'own', status: 'ok', desc: 'CTI Adulto | 19h-07h' },
+            { day: 24, type: 'off', status: 'off', desc: 'Folga' },
+            { day: 25, type: 'off', status: 'off', desc: 'Folga' },
+            { day: 26, type: 'own', status: 'ok', desc: 'Emergência | 08h-18h' },
+            { day: 27, type: 'own', status: 'ok', desc: 'Geral | 10h-20h' },
+            { day: 28, type: 'own', status: 'ok', desc: 'Emergência | 08h-18h' },
+            { day: 29, type: 'own', status: 'ok', desc: 'CTI Adulto | 19h-07h' },
+            { day: 30, type: 'own', status: 'ok', desc: 'Geral | 10h-20h' },
+            { day: 31, type: 'off', status: 'off', desc: 'Folga' },
+            // Próximo mês (Setembro) - Preenchimento
+            { day: 1, type: 'off', status: 'off', desc: 'Folga', nextMonth: true },
+        ];
+        
+        // Dados simulados para sugestão de substitutos (Regra 4)
+        const SUGESTÕES = [
+            { id: 101, name: 'Dr. Lucas Mendes', role: 'Médico Plantonista', hours: 24, reason: 'Menor carga horária acumulada' },
+            { id: 102, name: 'Dra. Patricia Lima', role: 'Médica (Geral)', hours: 28, reason: 'Compatível com setor/função' },
+            { id: 103, name: 'Dr. Ricardo Borges', role: 'Médico (Emergência)', hours: 32, reason: 'Especialista em Emergência' },
+        ];
+
+
+        /**
+         * Renderiza o calendário com os plantões do profissional.
+         */
+        function renderCalendar() {
+            const calendarGrid = document.getElementById('calendar-grid');
+            calendarGrid.innerHTML = '';
+            
+            // Simulação de preenchimento dos dias iniciais (Julho) - 4 dias
+            for (let i = 1; i <= 4; i++) {
+                calendarGrid.innerHTML += `<div class="calendar-day p-2 text-gray-400 bg-gray-100 rounded-lg text-sm"><span>${31 - 4 + i}</span></div>`;
+            }
+
+            DADOS_PLANTÕES.forEach(dayData => {
+                let statusColor = 'bg-gray-200';
+                let shiftText = '';
+                let cursorStyle = 'cursor-default';
+
+                if (dayData.type === 'own') {
+                    shiftText = `<span class="shift-badge own text-xs">${dayData.desc.split(' | ')[0]}</span>`;
+                    cursorStyle = 'cursor-pointer';
+                    
+                    if (dayData.status === 'pending') {
+                        // Substituição pendente (Amarelo)
+                        statusColor = 'bg-yellow-100 border-2 border-yellow-500';
+                        shiftText = `<span class="shift-badge pending text-xs"><i data-lucide="alert-triangle" class="w-3 h-3 inline-block mr-1"></i>Aguard. Subs.</span>`;
+                    } else if (dayData.status === 'substitute') {
+                        // Plantão de substituto
+                        statusColor = 'bg-orange-100 border-2 border-orange-500';
+                        shiftText = `<span class="shift-badge substitute text-xs"><i data-lucide="shuffle" class="w-3 h-3 inline-block mr-1"></i>Substituto</span>`;
+                    } else {
+                        // Plantão normal (Verde)
+                        statusColor = 'bg-green-100 border-2 border-primary';
+                    }
+                }
+
+                // Estilo para dias de folga
+                if (dayData.type === 'off') {
+                    statusColor = 'bg-gray-100';
+                }
+
+                const dayClass = dayData.nextMonth ? 'text-gray-400' : 'text-gray-900';
+                
+                // Monta a célula do dia
+                const cell = `
+                    <div class="calendar-day p-2 ${statusColor} rounded-lg text-sm shadow-sm ${cursorStyle}" onclick="showDayDetails(${dayData.day}, '${dayData.desc}', '${dayData.type}')">
+                        <span class="font-bold ${dayClass}">${dayData.day}</span>
+                        <div class="mt-1 flex flex-col items-start space-y-1">
+                            ${shiftText}
+                            <p class="text-xs text-gray-500 truncate w-full">${dayData.type === 'own' && dayData.status !== 'pending' ? dayData.desc : ''}</p>
+                        </div>
+                    </div>
+                `;
+                calendarGrid.innerHTML += cell;
+            });
+            
+            // Re-renderiza os ícones
+            lucide.createIcons();
+        }
+
+        /**
+         * Exibe detalhes ao clicar no dia (simula ação).
+         */
+        function showDayDetails(day, desc, type) {
+            if (type === 'own') {
+                showMessage(`Detalhes do Plantão - Dia ${day}/Ago`, `Você tem um plantão alocado: ${desc}. Clique em "Solicitar Substituição" para iniciar o processo.`);
+            } else {
+                showMessage(`Detalhes do Dia - Dia ${day}/Ago`, `Dia de folga. Aproveite!`);
+            }
+        }
+
+        /* -------------------------------------------
+           Lógica do Modal de Substituição (Regras 3 e 4)
+        ------------------------------------------- */
+
+        function openSubstitutionModal() {
+            document.getElementById('substitutionModal').classList.remove('hidden');
+            document.getElementById('substitutionModal').classList.add('flex');
+            
+            // Reseta estados
+            document.getElementById('substitutesPanel').classList.add('hidden');
+            document.getElementById('antecedenceWarning').classList.add('hidden');
+            document.getElementById('submitSubstitution').disabled = true;
+            document.getElementById('plantaoSelect').value = "";
+        }
+
+        function closeSubstitutionModal() {
+            document.getElementById('substitutionModal').classList.add('hidden');
+            document.getElementById('substitutionModal').classList.remove('flex');
+        }
+        
+        /**
+         * Carrega e exibe os 3 substitutos sugeridos (Regra 4)
+         */
+        function loadSubstitutes() {
+            const plantaoId = document.getElementById('plantaoSelect').value;
+            const substitutesPanel = document.getElementById('substitutesPanel');
+            const substitutesList = document.getElementById('substitutesList');
+            const submitButton = document.getElementById('submitSubstitution');
+            const antecedenceWarning = document.getElementById('antecedenceWarning');
+            
+            if (!plantaoId) {
+                substitutesPanel.classList.add('hidden');
+                submitButton.disabled = true;
+                antecedenceWarning.classList.add('hidden');
+                return;
+            }
+
+            // Simulação da Regra 3 (Antecedência de 12h)
+            const isUrgent = plantaoId == '1'; // Simula que o primeiro plantão é urgente
+            if (isUrgent) {
+                antecedenceWarning.classList.remove('hidden');
+            } else {
+                antecedenceWarning.classList.add('hidden');
+            }
+            
+            // Exibe o painel e habilita o botão
+            substitutesPanel.classList.remove('hidden');
+            submitButton.disabled = false;
+
+            substitutesList.innerHTML = ''; // Limpa lista
+
+            SUGESTÕES.forEach(sub => {
+                const item = `
+                    <div class="flex justify-between items-center p-3 bg-white rounded-lg border border-gray-200 shadow-sm">
+                        <div>
+                            <p class="font-semibold text-gray-800">${sub.name} (${sub.role})</p>
+                            <p class="text-xs text-gray-500">Acumulado: ${sub.hours}h | Motivo: ${sub.reason}</p>
+                        </div>
+                        <label class="inline-flex items-center">
+                            <input type="radio" name="selectedSubstitute" value="${sub.id}" class="form-radio text-primary" required>
+                            <span class="ml-2 text-sm text-gray-700">Escolher</span>
+                        </label>
+                    </div>
+                `;
+                substitutesList.innerHTML += item;
+            });
+
+            // Re-renderiza os ícones
+            lucide.createIcons();
+        }
+
+        document.getElementById('substitutionForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            closeSubstitutionModal();
+            showMessage('Pedido Enviado!', 'Sua solicitação de substituição foi enviada para o supervisor e para o profissional sugerido. Você será notificado sobre a aprovação. (Regra 5 - Auditoria gerada)', 'success');
+        });
+
+        /* -------------------------------------------
+           Lógica do Modal de Mensagens (Substitui alert())
+        ------------------------------------------- */
+        function showMessage(title, message, type = 'info') {
+            const modal = document.getElementById('messageModal');
+            document.getElementById('messageTitle').textContent = title;
+            document.getElementById('messageText').textContent = message;
+
+            let color = 'text-primary';
+            if (type === 'success') color = 'text-green-600';
+            if (type === 'danger') color = 'text-danger';
+            if (type === 'warning') color = 'text-amber-500';
+            
+            document.getElementById('messageTitle').className = `text-xl font-bold mb-3 ${color}`;
+
+            modal.classList.add('active');
+            modal.querySelector('.bg-white').classList.replace('scale-95', 'scale-100');
+        }
+
+        function closeMessageModal() {
+            const modal = document.getElementById('messageModal');
+            modal.querySelector('.bg-white').classList.replace('scale-100', 'scale-95');
+            setTimeout(() => {
+                modal.classList.remove('active');
+            }, 300); // tempo de espera para a transição
+        }
+
+        // Inicialização
+        document.addEventListener('DOMContentLoaded', () => {
+            renderCalendar();
+            // Injeção de dados de carga horária para simular Regra 1 (alerta visual)
+            const currentHours = 32;
+            if (currentHours > 35) {
+                document.getElementById('statusLoad').className = 'text-sm mt-1 font-medium text-danger';
+                document.getElementById('statusLoad').textContent = 'ATENÇÃO: Carga horária semanal elevada.';
+            }
+        });
+    </script>
+</body>
+</html>
