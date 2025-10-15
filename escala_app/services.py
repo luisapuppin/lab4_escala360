@@ -193,8 +193,8 @@ def listar_substituicoes_pendentes():
         status='pendente'
     ).select_related(
         # Pre-busca os objetos relacionados para evitar consultas N+1
-        'substituto', # Nome do campo no model Substituicao (id_profissional_substituto)
-        'solicitante', # Nome do campo no model Substituicao (id_profissional_solicitante)
+        'profissional_substituto', # Nome do campo no model Substituicao (id_profissional_substituto)
+        'profissional_solicitante', # Nome do campo no model Substituicao (id_profissional_solicitante)
         'escala_original__plantao' # Acessa o Plantao da Escala original
     ).order_by('data_solicitacao')
 
@@ -206,8 +206,8 @@ def listar_substituicoes_pendentes():
         resultados.append({
             'id': s.id,
             'plantao': f"ID {s.escala_original.plantao.id} em {plantao_data} às {plantao_hora}",
-            'solicitante': s.solicitante.nome,
-            'substituto_sugerido': s.substituto.nome,
+            'solicitante': s.profissional_solicitante.nome,
+            'substituto_sugerido': s.profissional_substituto.nome,
             'data_solicitacao': s.data_solicitacao.strftime('%Y-%m-%d %H:%M')
         })
         
