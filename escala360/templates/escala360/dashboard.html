@@ -1,0 +1,362 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Escala360 - Dashboard</title>
+    <style>
+        :root {
+            --primary: #1a73e8;
+            --primary-light: #e8f0fe;
+            --secondary: #34a853;
+            --warning: #f9ab00;
+            --danger: #ea4335;
+            --light: #f8f9fa;
+            --dark: #202124;
+            --gray: #5f6368;
+            --border-radius: 8px;
+            --shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+        }
+        
+        body {
+            background: linear-gradient(90deg, var(--primary-light) 0%, var(--primary-light) 10%, #f5f7fa 10%, #f5f7fa 90%, var(--primary-light) 90%, var(--primary-light) 100%);
+            color: var(--dark);
+            line-height: 1.6;
+            min-height: 100vh;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid #e0e0e0;
+        }
+        
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .logo-icon {
+            width: 40px;
+            height: 40px;
+            background: var(--primary);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+        }
+        
+        h1 {
+            color: var(--primary);
+            font-size: 1.8rem;
+            font-weight: 600;
+        }
+        
+        .dashboard-stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin: 30px 0;
+        }
+        
+        .stat-card {
+            background: white;
+            padding: 25px 20px;
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow);
+            text-align: center;
+            transition: transform 0.3s ease;
+            border-top: 4px solid var(--primary);
+        }
+        
+        .stat-card:nth-child(2) {
+            border-top-color: var(--secondary);
+        }
+        
+        .stat-card:nth-child(3) {
+            border-top-color: var(--warning);
+        }
+        
+        .stat-card:nth-child(4) {
+            border-top-color: var(--danger);
+        }
+        
+        .stat-card:hover {
+            transform: translateY(-5px);
+        }
+        
+        .stat-number {
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin-bottom: 5px;
+        }
+        
+        .stat-card:nth-child(1) .stat-number {
+            color: var(--primary);
+        }
+        
+        .stat-card:nth-child(2) .stat-number {
+            color: var(--secondary);
+        }
+        
+        .stat-card:nth-child(3) .stat-number {
+            color: var(--warning);
+        }
+        
+        .stat-card:nth-child(4) .stat-number {
+            color: var(--danger);
+        }
+        
+        .stat-card div:last-child {
+            color: var(--gray);
+            font-size: 0.9rem;
+            font-weight: 500;
+        }
+        
+        h2 {
+            color: var(--dark);
+            margin: 30px 0 15px;
+            font-size: 1.4rem;
+            font-weight: 600;
+        }
+        
+        .table-container {
+            background: white;
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow);
+            overflow: hidden;
+            margin-bottom: 30px;
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        
+        thead {
+            background-color: var(--primary-light);
+        }
+        
+        th {
+            padding: 15px 12px;
+            text-align: left;
+            font-weight: 600;
+            color: var(--primary);
+            border-bottom: 1px solid #e0e0e0;
+        }
+        
+        td {
+            padding: 12px;
+            border-bottom: 1px solid #f0f0f0;
+        }
+        
+        tbody tr:hover {
+            background-color: #f8f9fa;
+        }
+        
+        .funcao-badge {
+            background: var(--primary-light);
+            color: var(--primary);
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 0.8rem;
+            font-weight: 500;
+            display: inline-block;
+        }
+        
+        .local-badge {
+            background: #e6f4ea;
+            color: var(--secondary);
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 0.8rem;
+            font-weight: 500;
+            display: inline-block;
+        }
+        
+        .empty-state {
+            text-align: center;
+            padding: 40px 20px;
+            color: var(--gray);
+        }
+        
+        .empty-state i {
+            font-size: 3rem;
+            margin-bottom: 15px;
+            opacity: 0.5;
+        }
+        
+        nav {
+            background: white;
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow);
+            padding: 20px;
+        }
+        
+        nav ul {
+            list-style: none;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 10px;
+        }
+        
+        nav li {
+            margin-bottom: 8px;
+        }
+        
+        nav a {
+            display: block;
+            padding: 12px 15px;
+            background: var(--primary-light);
+            color: var(--primary);
+            text-decoration: none;
+            border-radius: 6px;
+            transition: all 0.2s ease;
+            font-weight: 500;
+        }
+        
+        nav a:hover {
+            background: var(--primary);
+            color: white;
+        }
+        
+        @media (max-width: 768px) {
+            body {
+                background: #f5f7fa;
+            }
+            
+            .dashboard-stats {
+                grid-template-columns: 1fr 1fr;
+            }
+            
+            nav ul {
+                grid-template-columns: 1fr;
+            }
+        }
+        
+        @media (max-width: 480px) {
+            .dashboard-stats {
+                grid-template-columns: 1fr;
+            }
+            
+            .container {
+                padding: 15px;
+            }
+            
+            table {
+                font-size: 0.8rem;
+            }
+            
+            th, td {
+                padding: 8px 6px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <div class="logo">
+                <div class="logo-icon">E360</div>
+                <h1>Escala360 - Dashboard</h1>
+            </div>
+        </header>
+        
+        <div class="dashboard-stats">
+            <div class="stat-card">
+                <div class="stat-number">{{ total_profissionais }}</div>
+                <div>Profissionais Ativos</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number">{{ total_plantoes }}</div>
+                <div>Total de Plantões</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number">{{ escalas_ativas }}</div>
+                <div>Escalas Ativas</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number">{{ substituicoes_pendentes }}</div>
+                <div>Substituições Pendentes</div>
+            </div>
+        </div>
+
+        <h2>Próximos Plantões (7 dias)</h2>
+        <div class="table-container">
+            {% if proximos_plantoes %}
+            <table>
+                <thead>
+                    <tr>
+                        <th>Data</th>
+                        <th>Horário</th>
+                        <th>Função</th>
+                        <th>Local</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for plantao in proximos_plantoes %}
+                    <tr>
+                        <td>{{ plantao.data|date:"d/m/Y" }}</td>
+                        <td>{{ plantao.hora_inicio }} - {{ plantao.hora_fim }}</td>
+                        <td>
+                            <span class="funcao-badge">
+                                {% if plantao.funcao %}
+                                    {{ plantao.funcao.nome }}
+                                {% else %}
+                                    N/A
+                                {% endif %}
+                            </span>
+                        </td>
+                        <td>
+                            <span class="local-badge">
+                                {% if plantao.local %}
+                                    {{ plantao.local.nome }}
+                                {% else %}
+                                    N/A
+                                {% endif %}
+                            </span>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+            {% else %}
+            <div class="empty-state">
+                <div>📅</div>
+                <h3>Nenhum plantão próximo</h3>
+                <p>Não há plantões agendados para os próximos 7 dias.</p>
+            </div>
+            {% endif %}
+        </div>
+
+        <nav>
+            <ul>
+                <li><a href="{% url 'escala360:lista_profissionais' %}">Lista de Profissionais</a></li>
+                <li><a href="{% url 'escala360:profissionais_carga_excedida' %}">Profissionais com Carga Excedida</a></li>
+                <li><a href="{% url 'escala360:visualizar_escalas' %}">Visualizar Escalas</a></li>
+                <li><a href="{% url 'escala360:cadastrar_escala' %}">Cadastrar Nova Escala</a></li>
+                <li><a href="{% url 'escala360:solicitar_substituicao' %}">Solicitar Substituição</a></li>
+                <li><a href="{% url 'escala360:substituicoes_pendentes' %}">Substituições Pendentes</a></li>
+                <li><a href="/admin/">Administração</a></li>
+            </ul>
+        </nav>
+    </div>
+</body>
+</html>

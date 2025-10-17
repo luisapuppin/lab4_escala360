@@ -1,5 +1,5 @@
 """
-ASGI config for escala project.
+ASGI config for escala360_project project.
 
 It exposes the ASGI callable as a module-level variable named ``application``.
 
@@ -11,6 +11,6 @@ import os
 
 from django.core.asgi import get_asgi_application
 
-os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'escala.settings')
+os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'escala360_project.settings')
 
 application = get_asgi_application()

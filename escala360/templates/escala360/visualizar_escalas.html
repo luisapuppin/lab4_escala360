@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Escalas - Escala360</title>
+    <style>
+        :root {
+            --primary: #1a73e8;
+            --primary-light: #e8f0fe;
+            --secondary: #34a853;
+            --warning: #f9ab00;
+            --danger: #ea4335;
+            --light: #f8f9fa;
+            --dark: #202124;
+            --gray: #5f6368;
+            --border-radius: 8px;
+            --shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+        }
+        
+        body {
+            background: linear-gradient(90deg, var(--primary-light) 0%, var(--primary-light) 10%, #f5f7fa 10%, #f5f7fa 90%, var(--primary-light) 90%, var(--primary-light) 100%);
+            color: var(--dark);
+            line-height: 1.6;
+            min-height: 100vh;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid #e0e0e0;
+        }
+        
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .logo-icon {
+            width: 40px;
+            height: 40px;
+            background: var(--primary);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+        }
+        
+        h1 {
+            color: var(--primary);
+            font-size: 1.8rem;
+            font-weight: 600;
+        }
+        
+        h2 {
+            color: var(--dark);
+            margin: 25px 0 15px;
+            font-size: 1.3rem;
+            font-weight: 600;
+            padding-bottom: 8px;
+            border-bottom: 2px solid var(--primary-light);
+        }
+        
+        .escala-section {
+            margin-bottom: 30px;
+        }
+        
+        .table-container {
+            background: white;
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow);
+            overflow: hidden;
+            margin-bottom: 20px;
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        
+        thead {
+            background-color: var(--primary-light);
+        }
+        
+        th {
+            padding: 15px 12px;
+            text-align: left;
+            font-weight: 600;
+            color: var(--primary);
+            border-bottom: 1px solid #e0e0e0;
+        }
+        
+        td {
+            padding: 12px;
+            border-bottom: 1px solid #f0f0f0;
+        }
+        
+        tbody tr:hover {
+            background-color: #f8f9fa;
+        }
+        
+        .status-confirmado {
+            color: var(--secondary);
+            font-weight: 600;
+        }
+        
+        .status-pendente {
+            color: var(--warning);
+            font-weight: 600;
+        }
+        
+        .status-cancelado {
+            color: var(--danger);
+            font-weight: 600;
+        }
+        
+        .back-link {
+            display: inline-block;
+            padding: 12px 20px;
+            background: var(--primary-light);
+            color: var(--primary);
+            text-decoration: none;
+            border-radius: 6px;
+            transition: all 0.2s ease;
+            font-weight: 500;
+            margin-top: 20px;
+        }
+        
+        .back-link:hover {
+            background: var(--primary);
+            color: white;
+        }
+        
+        @media (max-width: 768px) {
+            body {
+                background: #f5f7fa;
+            }
+            
+            .container {
+                padding: 15px;
+            }
+            
+            table {
+                font-size: 0.9rem;
+            }
+            
+            th, td {
+                padding: 8px 6px;
+            }
+        }
+        
+        @media (max-width: 480px) {
+            .container {
+                padding: 10px;
+            }
+            
+            h1 {
+                font-size: 1.5rem;
+            }
+            
+            h2 {
+                font-size: 1.1rem;
+            }
+            
+            table {
+                font-size: 0.8rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <div class="logo">
+                <div class="logo-icon">E360</div>
+                <h1>Escalas Consolidadas</h1>
+            </div>
+        </header>
+        
+        {% for data, escalas_data in escalas_por_data.items %}
+        <div class="escala-section">
+            <h2>{{ data }}</h2>
+            <div class="table-container">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Horário</th>
+                            <th>Profissional</th>
+                            <th>Cargo</th>
+                            <th>Status</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for escala in escalas_data %}
+                        <tr>
+                            <td>{{ escala.id_plantao.hora_inicio }} - {{ escala.id_plantao.hora_fim }}</td>
+                            <td>{{ escala.id_profissional.nome }}</td>
+                            <td>{{ escala.id_profissional.cargo }}</td>
+                            <td>
+                                {% if escala.status == 'confirmado' or escala.status == 'Confirmado' %}
+                                    <span class="status-confirmado">{{ escala.status }}</span>
+                                {% elif escala.status == 'pendente' or escala.status == 'Pendente' %}
+                                    <span class="status-pendente">{{ escala.status }}</span>
+                                {% elif escala.status == 'cancelado' or escala.status == 'Cancelado' %}
+                                    <span class="status-cancelado">{{ escala.status }}</span>
+                                {% else %}
+                                    {{ escala.status }}
+                                {% endif %}
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        {% endfor %}
+
+        <a href="{% url 'escala360:dashboard' %}" class="back-link">← Voltar ao Dashboard</a>
+    </div>
+</body>
+</html>

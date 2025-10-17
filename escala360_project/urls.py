@@ -1,5 +1,5 @@
 """
-URL configuration for escala project.
+URL configuration for escala360_project project.
 
 The `urlpatterns` list routes URLs to views. For more information please see:
     https://docs.djangoproject.com/en/5.2/topics/http/urls/
@@ -19,5 +19,6 @@ from django.urls import path, include
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('', include('escala_app.urls')), 
+    path('', include('escala360.urls'), name='escala360'),
+    path('escala360/', include('escala360.urls')),
 ]

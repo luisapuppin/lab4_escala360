@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Substituições Pendentes - Escala360</title>
+    <style>
+        :root {
+            --primary: #1a73e8;
+            --primary-light: #e8f0fe;
+            --secondary: #34a853;
+            --warning: #f9ab00;
+            --danger: #ea4335;
+            --light: #f8f9fa;
+            --dark: #202124;
+            --gray: #5f6368;
+            --border-radius: 8px;
+            --shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+        }
+        
+        body {
+            background: linear-gradient(90deg, var(--primary-light) 0%, var(--primary-light) 10%, #f5f7fa 10%, #f5f7fa 90%, var(--primary-light) 90%, var(--primary-light) 100%);
+            color: var(--dark);
+            line-height: 1.6;
+            min-height: 100vh;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid #e0e0e0;
+        }
+        
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .logo-icon {
+            width: 40px;
+            height: 40px;
+            background: var(--primary);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+        }
+        
+        h1 {
+            color: var(--primary);
+            font-size: 1.8rem;
+            font-weight: 600;
+        }
+        
+        .table-container {
+            background: white;
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow);
+            overflow: hidden;
+            margin-bottom: 30px;
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        
+        thead {
+            background-color: var(--primary-light);
+        }
+        
+        th {
+            padding: 15px 12px;
+            text-align: left;
+            font-weight: 600;
+            color: var(--primary);
+            border-bottom: 1px solid #e0e0e0;
+        }
+        
+        td {
+            padding: 12px;
+            border-bottom: 1px solid #f0f0f0;
+        }
+        
+        tbody tr:hover {
+            background-color: #f8f9fa;
+        }
+        
+        .status-pendente {
+            color: var(--warning);
+            font-weight: 600;
+        }
+        
+        .status-aprovado {
+            color: var(--secondary);
+            font-weight: 600;
+        }
+        
+        .status-rejeitado {
+            color: var(--danger);
+            font-weight: 600;
+        }
+        
+        .empty-message {
+            text-align: center;
+            padding: 40px 20px;
+            color: var(--gray);
+            font-style: italic;
+        }
+        
+        .back-link {
+            display: inline-block;
+            padding: 12px 20px;
+            background: var(--primary-light);
+            color: var(--primary);
+            text-decoration: none;
+            border-radius: 6px;
+            transition: all 0.2s ease;
+            font-weight: 500;
+            margin-top: 20px;
+        }
+        
+        .back-link:hover {
+            background: var(--primary);
+            color: white;
+        }
+        
+        @media (max-width: 768px) {
+            body {
+                background: #f5f7fa;
+            }
+            
+            .container {
+                padding: 15px;
+            }
+            
+            table {
+                font-size: 0.9rem;
+            }
+            
+            th, td {
+                padding: 8px 6px;
+            }
+        }
+        
+        @media (max-width: 480px) {
+            .container {
+                padding: 10px;
+            }
+            
+            h1 {
+                font-size: 1.5rem;
+            }
+            
+            table {
+                font-size: 0.8rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <div class="logo">
+                <div class="logo-icon">E360</div>
+                <h1>Substituições Pendentes de Aprovação</h1>
+            </div>
+        </header>
+        
+        <div class="table-container">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Plantão</th>
+                        <th>Escala</th>
+                        <th>Solicitante</th>
+                        <th>Substituto</th>
+                        <th>Data Solicitação</th>
+                        <th>Status</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for substituicao in substituicoes %}
+                    <tr>
+                        <td>{{ substituicao.id_escala_original.id_plantao.id }}</td>
+                        <td>{{ substituicao.id_escala_original.id_plantao.data }}</td>
+                        <td>{{ substituicao.id_profissional_solicitante.nome }}</td>
+                        <td>{{ substituicao.id_profissional_substituto.nome }}</td>
+                        <td>{{ substituicao.data_solicitacao }}</td>
+                        <td>
+                            {% if substituicao.get_status_display == 'Pendente' or substituicao.status == 'pendente' %}
+                                <span class="status-pendente">{{ substituicao.get_status_display }}</span>
+                            {% elif substituicao.get_status_display == 'Aprovado' or substituicao.status == 'aprovado' %}
+                                <span class="status-aprovado">{{ substituicao.get_status_display }}</span>
+                            {% elif substituicao.get_status_display == 'Rejeitado' or substituicao.status == 'rejeitado' %}
+                                <span class="status-rejeitado">{{ substituicao.get_status_display }}</span>
+                            {% else %}
+                                {{ substituicao.get_status_display }}
+                            {% endif %}
+                        </td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="6" class="empty-message">Nenhuma substituição pendente</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+
+        <a href="{% url 'escala360:dashboard' %}" class="back-link">← Voltar ao Dashboard</a>
+    </div>
+</body>
+</html>
