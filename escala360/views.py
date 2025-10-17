@@ -52,19 +52,76 @@ def lista_profissionais(request):
     return render(request, 'escala360/lista_profissionais.html', context)
 
 def visualizar_escalas(request):
-    """Visualização consolidada das escalas"""
+    """Visualização consolidada das escalas considerando substituições"""
     # Buscar escalas ativas ordenadas por data e horário
     escalas = Escala.objects.select_related('id_plantao', 'id_profissional')\
                           .filter(status='ativo')\
                           .order_by('id_plantao__data', 'id_plantao__hora_inicio')
     
+    # Buscar todas as substituições aprovadas e pendentes
+    substituicoes_aprovadas = Substituicao.objects.filter(
+        status='aprovado'
+    ).select_related(
+        'id_escala_original__id_plantao',
+        'id_escala_original__id_profissional',
+        'id_profissional_substituto'
+    )
+    
+    substituicoes_pendentes = Substituicao.objects.filter(
+        status='pendente'
+    ).select_related(
+        'id_escala_original__id_plantao',
+        'id_escala_original__id_profissional',
+        'id_profissional_substituto'
+    )
+    
+    # Criar dicionários para acesso rápido
+    substituicoes_aprovadas_dict = {}
+    for subst in substituicoes_aprovadas:
+        substituicoes_aprovadas_dict[subst.id_escala_original_id] = subst
+    
+    substituicoes_pendentes_dict = {}
+    for subst in substituicoes_pendentes:
+        substituicoes_pendentes_dict[subst.id_escala_original_id] = subst
+    
+    # Processar escalas para incluir informações de substituição
+    escalas_processadas = []
+    for escala in escalas:
+        escala_data = {
+            'id': escala.id,
+            'id_plantao': escala.id_plantao,
+            'id_profissional': escala.id_profissional,
+            'status': escala.status,
+            'data_alocacao': escala.data_alocacao,
+            'substituicao_aprovada': False,
+            'substituicao_pendente': False,
+            'profissional_atual': escala.id_profissional,  # Inicialmente o profissional original
+            'substituicao_info': None
+        }
+        
+        # Verificar se há substituição aprovada para esta escala
+        if escala.id in substituicoes_aprovadas_dict:
+            subst = substituicoes_aprovadas_dict[escala.id]
+            escala_data['substituicao_aprovada'] = True
+            escala_data['profissional_atual'] = subst.id_profissional_substituto
+            escala_data['substituicao_info'] = subst
+        
+        # Verificar se há substituição pendente para esta escala
+        elif escala.id in substituicoes_pendentes_dict:
+            subst = substituicoes_pendentes_dict[escala.id]
+            escala_data['substituicao_pendente'] = True
+            escala_data['profissional_atual'] = subst.id_profissional_substituto
+            escala_data['substituicao_info'] = subst
+        
+        escalas_processadas.append(escala_data)
+    
     # Agrupar por data para facilitar a visualização
     escalas_por_data = {}
-    for escala in escalas:
-        data = escala.id_plantao.data
+    for escala_data in escalas_processadas:
+        data = escala_data['id_plantao'].data
         if data not in escalas_por_data:
             escalas_por_data[data] = []
-        escalas_por_data[data].append(escala)
+        escalas_por_data[data].append(escala_data)
     
     # Ordenar o dicionário por data (chaves)
     escalas_por_data_ordenado = dict(sorted(escalas_por_data.items()))

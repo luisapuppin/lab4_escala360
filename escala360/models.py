@@ -120,6 +120,21 @@ class Escala(models.Model):
     
     def __str__(self):
         return f"Escala {self.id} - {self.id_profissional.nome}"
+    
+    def tem_substituicao_aprovada(self):
+        """Verifica se esta escala tem uma substituição aprovada"""
+        return self.substituicoes_originais.filter(status='aprovado').exists()
+    
+    def tem_substituicao_pendente(self):
+        """Verifica se esta escala tem uma substituição pendente"""
+        return self.substituicoes_originais.filter(status='pendente').exists()
+    
+    def get_profissional_atual(self):
+        """Retorna o profissional atual (considerando substituições)"""
+        substituicao_aprovada = self.substituicoes_originais.filter(status='aprovado').first()
+        if substituicao_aprovada:
+            return substituicao_aprovada.id_profissional_substituto
+        return self.id_profissional
 
 class Substituicao(models.Model):
     STATUS_CHOICES = [
