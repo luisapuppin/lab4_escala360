@@ -8,3 +8,23 @@ Desenvolver um sistema de escala e plantões para clínicas ou hospitais impleme
 
 ## Linguagem e ferramentas
 O projeto utiliza linguagem Python e o framework Django.
+
+## Migração de dados
+O projeto apresenta um banco de dados pré-configurado para visualização. Para realizar a migração do modelo de dados e popular os dados faça os seguintes comandos no terminal:
+
+```bash
+python manage.py makemigrations
+
+python manage.py migrate
+
+python manage.py criar_funcoes_locais
+
+python manage.py importar_dados_sql
+```
+
+## Iniciar o servidor
+Para iniciar o servidor do Django escreva o seguinte comando no terminal
+
+```bash
+python manage.py runserver
+```

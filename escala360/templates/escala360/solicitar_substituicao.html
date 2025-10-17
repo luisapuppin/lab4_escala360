@@ -1,0 +1,612 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Solicitar Substituição - Escala360</title>
+    <style>
+        :root {
+            --primary: #1a73e8;
+            --primary-light: #e8f0fe;
+            --secondary: #34a853;
+            --warning: #f9ab00;
+            --danger: #ea4335;
+            --light: #f8f9fa;
+            --dark: #202124;
+            --gray: #5f6368;
+            --border-radius: 8px;
+            --shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+        }
+        
+        body {
+            background: linear-gradient(90deg, var(--primary-light) 0%, var(--primary-light) 10%, #f5f7fa 10%, #f5f7fa 90%, var(--primary-light) 90%, var(--primary-light) 100%);
+            color: var(--dark);
+            line-height: 1.6;
+            min-height: 100vh;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid #e0e0e0;
+        }
+        
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .logo-icon {
+            width: 40px;
+            height: 40px;
+            background: var(--primary);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+        }
+        
+        h1 {
+            color: var(--primary);
+            font-size: 1.8rem;
+            font-weight: 600;
+        }
+        
+        .info-box {
+            background: white;
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow);
+            padding: 20px;
+            margin-bottom: 25px;
+            border-left: 4px solid var(--primary);
+        }
+        
+        .info-box h3 {
+            color: var(--primary);
+            margin-bottom: 10px;
+        }
+        
+        .info-box ul {
+            padding-left: 20px;
+        }
+        
+        .info-box li {
+            margin-bottom: 8px;
+        }
+        
+        .messages {
+            margin: 20px 0;
+        }
+        
+        .alert {
+            padding: 15px;
+            border-radius: var(--border-radius);
+            margin-bottom: 15px;
+            border-left: 4px solid;
+        }
+        
+        .alert-error {
+            background: #f8d7da;
+            color: #721c24;
+            border-left-color: var(--danger);
+        }
+        
+        .alert-success {
+            background: #d4edda;
+            color: #155724;
+            border-left-color: var(--secondary);
+        }
+        
+        .alert-warning {
+            background: #fff3cd;
+            color: #856404;
+            border-left-color: var(--warning);
+        }
+        
+        .section-title {
+            border-bottom: 2px solid var(--primary-light);
+            padding-bottom: 10px;
+            margin: 25px 0 15px;
+            color: var(--primary);
+            font-size: 1.3rem;
+        }
+        
+        .form-group {
+            margin-bottom: 20px;
+        }
+        
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: var(--dark);
+        }
+        
+        .form-control {
+            width: 100%;
+            padding: 12px 15px;
+            border: 1px solid #ddd;
+            border-radius: var(--border-radius);
+            font-size: 14px;
+            box-sizing: border-box;
+            transition: all 0.3s ease;
+        }
+        
+        .form-control:focus {
+            border-color: var(--primary);
+            outline: none;
+            box-shadow: 0 0 5px rgba(26, 115, 232, 0.3);
+        }
+        
+        .btn {
+            background: var(--primary);
+            color: white;
+            padding: 12px 25px;
+            border: none;
+            border-radius: var(--border-radius);
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 600;
+            margin-right: 10px;
+            margin-bottom: 5px;
+            transition: all 0.3s ease;
+        }
+        
+        .btn:hover {
+            background: #1557b0;
+            transform: translateY(-1px);
+        }
+        
+        .btn:disabled {
+            background: var(--gray);
+            cursor: not-allowed;
+            transform: none;
+        }
+        
+        .btn-secondary {
+            background: var(--gray);
+        }
+        
+        .btn-secondary:hover {
+            background: #4a5568;
+        }
+        
+        .btn-success {
+            background: var(--secondary);
+        }
+        
+        .btn-success:hover {
+            background: #2d8c47;
+        }
+        
+        .btn-sm {
+            padding: 8px 15px;
+            font-size: 12px;
+        }
+        
+        .selected-info {
+            background: var(--primary-light);
+            border-radius: var(--border-radius);
+            padding: 15px;
+            margin-top: 10px;
+            border: 1px solid #b8e2fb;
+        }
+        
+        .alerta {
+            background: #fff3cd;
+            border: 1px solid #ffeaa7;
+            color: #856404;
+            padding: 12px 15px;
+            border-radius: var(--border-radius);
+            margin: 15px 0;
+            border-left: 4px solid var(--warning);
+        }
+        
+        .sugestoes-box {
+            background: white;
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow);
+            padding: 20px;
+            margin-top: 20px;
+        }
+        
+        .sugestao-item {
+            background: white;
+            border: 1px solid #e0e0e0;
+            border-radius: var(--border-radius);
+            padding: 15px;
+            margin-bottom: 10px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            transition: all 0.3s ease;
+        }
+        
+        .sugestao-item:hover {
+            box-shadow: var(--shadow);
+        }
+        
+        .sugestao-info {
+            flex: 1;
+        }
+        
+        .sugestao-actions {
+            margin-left: 15px;
+        }
+        
+        .carga-horaria {
+            font-size: 12px;
+            color: var(--gray);
+            margin-top: 5px;
+        }
+        
+        .progress-bar {
+            background: #e9ecef;
+            border-radius: 10px;
+            height: 8px;
+            margin: 5px 0;
+            overflow: hidden;
+        }
+        
+        .progress-fill {
+            height: 100%;
+            border-radius: 10px;
+        }
+        
+        .progress-baixa { background: var(--secondary); }
+        .progress-media { background: var(--warning); }
+        .progress-alta { background: var(--danger); }
+        
+        .nav-links {
+            margin-top: 30px;
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+        
+        .nav-links a {
+            display: inline-block;
+            padding: 12px 20px;
+            background: var(--primary-light);
+            color: var(--primary);
+            text-decoration: none;
+            border-radius: var(--border-radius);
+            transition: all 0.2s ease;
+            font-weight: 500;
+        }
+        
+        .nav-links a:hover {
+            background: var(--primary);
+            color: white;
+        }
+        
+        @media (max-width: 768px) {
+            body {
+                background: #f5f7fa;
+            }
+            
+            .container {
+                padding: 15px;
+            }
+            
+            .sugestao-item {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+            
+            .sugestao-actions {
+                margin-left: 0;
+                margin-top: 10px;
+                width: 100%;
+            }
+            
+            .nav-links {
+                flex-direction: column;
+            }
+        }
+        
+        @media (max-width: 480px) {
+            .container {
+                padding: 10px;
+            }
+            
+            h1 {
+                font-size: 1.5rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <div class="logo">
+                <div class="logo-icon">E360</div>
+                <h1>Solicitar Substituição</h1>
+            </div>
+        </header>
+        
+        <div class="info-box">
+            <h3>📋 Informações Importantes</h3>
+            <ul>
+                <li>Substituições devem ser solicitadas com <strong>mínimo de 12 horas de antecedência</strong></li>
+                <li>O sistema verificará automaticamente conflitos de horário</li>
+                <li>Serão sugeridos substitutos com menor carga horária</li>
+                <li>Todas as substituições precisam de aprovação do supervisor</li>
+            </ul>
+        </div>
+
+        {% if messages %}
+        <div class="messages">
+            {% for message in messages %}
+            <div class="alert alert-{{ message.tags }}">{{ message }}</div>
+            {% endfor %}
+        </div>
+        {% endif %}
+
+        <form method="post" id="substituicaoForm">
+            {% csrf_token %}
+            
+            <h3 class="section-title">📅 Selecionar Plantão para Substituição</h3>
+            
+            <div class="form-group">
+                <label for="id_escala_original">Plantão a Ser Substituído *</label>
+                <select name="id_escala_original" id="id_escala_original" class="form-control" required onchange="atualizarInfoEscala()">
+                    <option value="">-- Selecione um plantão --</option>
+                    {% for escala in escalas_futuras %}
+                    <option value="{{ escala.id }}" 
+                            data-profissional="{{ escala.id_profissional.id }}"
+                            data-data="{{ escala.id_plantao.data }}"
+                            data-horario="{{ escala.id_plantao.hora_inicio }} - {{ escala.id_plantao.hora_fim }}"
+                            data-funcao="{{ escala.id_plantao.id_funcao }}"
+                            data-local="{{ escala.id_plantao.id_local }}"
+                            data-profissional-nome="{{ escala.id_profissional.nome }}"
+                            data-profissional-cargo="{{ escala.id_profissional.cargo }}">
+                        {{ escala.id_plantao.data|date:"d/m/Y" }} - {{ escala.id_plantao.hora_inicio }} às {{ escala.id_plantao.hora_fim }} 
+                        ({{ escala.id_profissional.nome }} - {{ escala.id_profissional.cargo }})
+                    </option>
+                    {% endfor %}
+                </select>
+                <div id="info-escala" class="selected-info" style="display: none;">
+                    <strong>Profissional:</strong> <span id="profissional-nome"></span> (<span id="profissional-cargo"></span>)<br>
+                    <strong>Data e Horário:</strong> <span id="data-horario"></span><br>
+                    <strong>Local/Função:</strong> Local <span id="local"></span> - Função <span id="funcao"></span>
+                </div>
+            </div>
+
+            <!-- Seção de Sugestões -->
+            <div id="secao-sugestoes" style="display: none;">
+                <h3 class="section-title">💡 Sugestões de Substitutos</h3>
+                <p>Profissionais disponíveis no horário selecionado, ordenados por menor carga horária:</p>
+                
+                <div id="lista-sugestoes">
+                    <!-- As sugestões serão carregadas via JavaScript -->
+                </div>
+                
+                <div class="form-group">
+                    <label>Ou selecione manualmente um substituto:</label>
+                    <select name="id_profissional_substituto" id="id_profissional_substituto" class="form-control" onchange="atualizarInfoSubstituto()">
+                        <option value="">-- Selecione um substituto --</option>
+                        {% for profissional in profissionais %}
+                        <option value="{{ profissional.id }}" 
+                                data-cargo="{{ profissional.cargo }}"
+                                data-email="{{ profissional.email }}"
+                                data-carga-horaria="{{ profissional.carga_horaria_maxima_semanal }}"
+                                data-horas-trabalhadas="{{ profissional.horas_trabalhadas_semana }}">
+                            {{ profissional.nome }} - {{ profissional.cargo }} 
+                            ({{ profissional.horas_trabalhadas_semana }}h/{{ profissional.carga_horaria_maxima_semanal }}h)
+                        </option>
+                        {% endfor %}
+                    </select>
+                    <div id="info-substituto" class="selected-info" style="display: none;">
+                        <strong>Cargo:</strong> <span id="substituto-cargo"></span><br>
+                        <strong>Email:</strong> <span id="substituto-email"></span><br>
+                        <strong>Carga Horária:</strong> <span id="substituto-carga"></span> horas trabalhadas esta semana
+                    </div>
+                </div>
+            </div>
+
+            <div id="alerta-conflito" class="alerta" style="display: none;">
+                ⚠️ <strong>Atenção:</strong> Este profissional substituto já possui um plantão no mesmo horário!
+            </div>
+
+            <div id="alerta-antecedencia" class="alerta" style="display: none;">
+                ⚠️ <strong>Atenção:</strong> Substituição com menos de 12h de antecedência. Será necessária aprovação especial do supervisor.
+            </div>
+
+            <div class="form-group">
+                <button type="submit" class="btn" id="btn-submit" disabled>✅ Solicitar Substituição</button>
+                <a href="{% url 'escala360:dashboard' %}" class="btn btn-secondary">❌ Cancelar</a>
+            </div>
+        </form>
+
+        <div class="nav-links">
+            <a href="{% url 'escala360:dashboard' %}">← Voltar ao Dashboard</a>
+            <a href="{% url 'escala360:substituicoes_pendentes' %}">Ver Substituições Pendentes</a>
+        </div>
+    </div>
+
+    <script>
+        function atualizarInfoEscala() {
+            const select = document.getElementById('id_escala_original');
+            const selectedOption = select.options[select.selectedIndex];
+            const infoDiv = document.getElementById('info-escala');
+            const secaoSugestoes = document.getElementById('secao-sugestoes');
+            const btnSubmit = document.getElementById('btn-submit');
+            
+            if (select.value) {
+                // Mostrar informações da escala
+                document.getElementById('profissional-nome').textContent = selectedOption.getAttribute('data-profissional-nome');
+                document.getElementById('profissional-cargo').textContent = selectedOption.getAttribute('data-profissional-cargo');
+                document.getElementById('data-horario').textContent = selectedOption.getAttribute('data-data') + ' - ' + selectedOption.getAttribute('data-horario');
+                document.getElementById('local').textContent = selectedOption.getAttribute('data-local');
+                document.getElementById('funcao').textContent = selectedOption.getAttribute('data-funcao');
+                infoDiv.style.display = 'block';
+                
+                // Mostrar seção de sugestões
+                secaoSugestoes.style.display = 'block';
+                
+                // Carregar sugestões
+                carregarSugestoes(select.value);
+                
+                // Verificar antecedência
+                verificarAntecedencia(selectedOption.getAttribute('data-data'));
+                
+                // Desabilitar botão até selecionar substituto
+                btnSubmit.disabled = true;
+            } else {
+                infoDiv.style.display = 'none';
+                secaoSugestoes.style.display = 'none';
+                btnSubmit.disabled = true;
+            }
+        }
+        
+        function carregarSugestoes(escalaId) {
+            fetch(`/escala360/substituicoes/solicitar/?escala_id=${escalaId}`)
+                .then(response => response.text())
+                .then(html => {
+                    // Extrair apenas a parte das sugestões do HTML retornado
+                    const tempDiv = document.createElement('div');
+                    tempDiv.innerHTML = html;
+                    const sugestoesContent = tempDiv.querySelector('#lista-sugestoes-hidden');
+                    
+                    if (sugestoesContent) {
+                        document.getElementById('lista-sugestoes').innerHTML = sugestoesContent.innerHTML;
+                    } else {
+                        document.getElementById('lista-sugestoes').innerHTML = '<p>Nenhuma sugestão disponível no momento.</p>';
+                    }
+                })
+                .catch(error => {
+                    console.error('Erro ao carregar sugestões:', error);
+                    document.getElementById('lista-sugestoes').innerHTML = '<p>Erro ao carregar sugestões.</p>';
+                });
+        }
+        
+        function usarSugestao(profissionalId, profissionalNome) {
+            // Preencher automaticamente o campo de substituto
+            const selectSubstituto = document.getElementById('id_profissional_substituto');
+            selectSubstituto.value = profissionalId;
+            atualizarInfoSubstituto();
+            
+            // Rolar até o formulário
+            selectSubstituto.scrollIntoView({ behavior: 'smooth' });
+        }
+        
+        function atualizarInfoSubstituto() {
+            const select = document.getElementById('id_profissional_substituto');
+            const selectedOption = select.options[select.selectedIndex];
+            const infoDiv = document.getElementById('info-substituto');
+            const btnSubmit = document.getElementById('btn-submit');
+            
+            if (select.value) {
+                document.getElementById('substituto-cargo').textContent = selectedOption.getAttribute('data-cargo');
+                document.getElementById('substituto-email').textContent = selectedOption.getAttribute('data-email');
+                const horasTrabalhadas = selectedOption.getAttribute('data-horas-trabalhadas');
+                const cargaMaxima = selectedOption.getAttribute('data-carga-horaria');
+                document.getElementById('substituto-carga').textContent = `${horasTrabalhadas}/${cargaMaxima}`;
+                infoDiv.style.display = 'block';
+                
+                // Habilitar botão de submit
+                btnSubmit.disabled = false;
+            } else {
+                infoDiv.style.display = 'none';
+                btnSubmit.disabled = true;
+            }
+            
+            // Verificar conflitos
+            verificarConflito();
+        }
+        
+        function verificarConflito() {
+            const escalaSelect = document.getElementById('id_escala_original');
+            const substitutoSelect = document.getElementById('id_profissional_substituto');
+            const alertaConflito = document.getElementById('alerta-conflito');
+            
+            if (escalaSelect.value && substitutoSelect.value) {
+                const profissionalOriginal = escalaSelect.options[escalaSelect.selectedIndex].getAttribute('data-profissional');
+                if (profissionalOriginal === substitutoSelect.value) {
+                    alertaConflito.innerHTML = '⚠️ <strong>Atenção:</strong> Não é possível selecionar o mesmo profissional como substituto!';
+                    alertaConflito.style.display = 'block';
+                } else {
+                    alertaConflito.style.display = 'none';
+                }
+            } else {
+                alertaConflito.style.display = 'none';
+            }
+        }
+        
+        function verificarAntecedencia(dataPlantao) {
+            const alertaAntecedencia = document.getElementById('alerta-antecedencia');
+            const hoje = new Date();
+            const dataPlantaoObj = new Date(dataPlantao + 'T00:00:00');
+            const diferencaMs = dataPlantaoObj - hoje;
+            const diferencaHoras = diferencaMs / (1000 * 60 * 60);
+            
+            if (diferencaHoras < 12) {
+                alertaAntecedencia.style.display = 'block';
+            } else {
+                alertaAntecedencia.style.display = 'none';
+            }
+        }
+        
+        // Validação do formulário
+        document.getElementById('substituicaoForm').addEventListener('submit', function(e) {
+            const escala = document.getElementById('id_escala_original').value;
+            const substituto = document.getElementById('id_profissional_substituto').value;
+            
+            if (!escala || !substituto) {
+                e.preventDefault();
+                alert('Por favor, selecione todos os campos obrigatórios.');
+                return false;
+            }
+        });
+    </script>
+
+    <!-- Container hidden para armazenar as sugestões -->
+    <div id="lista-sugestoes-hidden" style="display: none;">
+        {% if sugestoes %}
+            {% for sugestao in sugestoes %}
+            <div class="sugestao-item">
+                <div class="sugestao-info">
+                    <strong>{{ sugestao.profissional.nome }}</strong><br>
+                    <small>{{ sugestao.profissional.cargo }} • {{ sugestao.profissional.email }}</small>
+                    <div class="carga-horaria">
+                        {{ sugestao.horas_trabalhadas }}h / {{ sugestao.carga_maxima }}h 
+                        ({{ sugestao.percentual_utilizado|floatformat:1 }}% da carga horária)
+                    </div>
+                    <div class="progress-bar">
+                        <div class="progress-fill {% if sugestao.percentual_utilizado < 60 %}progress-baixa{% elif sugestao.percentual_utilizado < 85 %}progress-media{% else %}progress-alta{% endif %}" 
+                             style="width: {% if sugestao.percentual_utilizado > 100 %}100{% else %}{{ sugestao.percentual_utilizado }}{% endif %}%">
+                        </div>
+                    </div>
+                </div>
+                <div class="sugestao-actions">
+                    <button type="button" class="btn btn-success btn-sm" 
+                            onclick="usarSugestao('{{ sugestao.profissional.id }}', '{{ sugestao.profissional.nome }}')">
+                        Usar
+                    </button>
+                </div>
+            </div>
+            {% endfor %}
+        {% else %}
+            <p>Nenhum substituto disponível encontrado para este horário.</p>
+        {% endif %}
+    </div>
+</body>
+</html>

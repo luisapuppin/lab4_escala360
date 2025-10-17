@@ -1,0 +1,497 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Escalas - Escala360</title>
+    <style>
+        :root {
+            --primary: #1a73e8;
+            --primary-light: #e8f0fe;
+            --secondary: #34a853;
+            --warning: #f9ab00;
+            --danger: #ea4335;
+            --light: #f8f9fa;
+            --dark: #202124;
+            --gray: #5f6368;
+            --border-radius: 8px;
+            --shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+        }
+        
+        body {
+            background: linear-gradient(90deg, var(--primary-light) 0%, var(--primary-light) 10%, #f5f7fa 10%, #f5f7fa 90%, var(--primary-light) 90%, var(--primary-light) 100%);
+            color: var(--dark);
+            line-height: 1.6;
+            min-height: 100vh;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid #e0e0e0;
+        }
+        
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .logo-icon {
+            width: 40px;
+            height: 40px;
+            background: var(--primary);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+        }
+        
+        h1 {
+            color: var(--primary);
+            font-size: 1.8rem;
+            font-weight: 600;
+        }
+        
+        h2 {
+            color: var(--dark);
+            margin: 25px 0 15px;
+            font-size: 1.3rem;
+            font-weight: 600;
+            padding-bottom: 8px;
+            border-bottom: 2px solid var(--primary-light);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .date-badge {
+            background: var(--primary);
+            color: white;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 0.8rem;
+            font-weight: 500;
+        }
+        
+        .escala-section {
+            margin-bottom: 30px;
+        }
+        
+        .table-container {
+            background: white;
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow);
+            overflow: hidden;
+            margin-bottom: 20px;
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        
+        thead {
+            background-color: var(--primary-light);
+        }
+        
+        th {
+            padding: 15px 12px;
+            text-align: left;
+            font-weight: 600;
+            color: var(--primary);
+            border-bottom: 1px solid #e0e0e0;
+        }
+        
+        td {
+            padding: 12px;
+            border-bottom: 1px solid #f0f0f0;
+        }
+        
+        tbody tr:hover {
+            background-color: #f8f9fa;
+        }
+        
+        .horario-cell {
+            font-weight: 500;
+            color: var(--dark);
+        }
+        
+        .profissional-cell {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .avatar {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            background: var(--primary-light);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--primary);
+            font-weight: 600;
+            font-size: 0.8rem;
+        }
+        
+        .profissional-info {
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .profissional-nome {
+            font-weight: 500;
+        }
+        
+        .profissional-email {
+            font-size: 0.8rem;
+            color: var(--gray);
+        }
+        
+        .cargo-cell {
+            background: var(--primary-light);
+            color: var(--primary);
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 0.8rem;
+            font-weight: 500;
+            display: inline-block;
+        }
+        
+        /* Status das escalas */
+        .status-ativo {
+            color: var(--primary);
+            font-weight: 600;
+            background: var(--primary-light);
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 0.8rem;
+        }
+        
+        .status-substituicao-aprovada {
+            color: var(--secondary);
+            font-weight: 600;
+            background: #e6f4ea;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 0.8rem;
+        }
+        
+        .status-substituicao-pendente {
+            color: var(--warning);
+            font-weight: 600;
+            background: #fef7e0;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 0.8rem;
+        }
+        
+        .status-cancelado {
+            color: var(--danger);
+            font-weight: 600;
+            background: #fce8e6;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 0.8rem;
+        }
+        
+        /* Tags de tipo de escala */
+        .tag-escala {
+            display: inline-block;
+            padding: 2px 6px;
+            border-radius: 3px;
+            font-size: 0.7rem;
+            font-weight: 600;
+            margin-left: 5px;
+        }
+        
+        .tag-normal {
+            background: var(--primary-light);
+            color: var(--primary);
+        }
+        
+        .tag-substituicao {
+            background: #e6f4ea;
+            color: var(--secondary);
+        }
+        
+        .tag-pendente {
+            background: #fef7e0;
+            color: var(--warning);
+        }
+        
+        .substituicao-info {
+            font-size: 0.8rem;
+            color: var(--gray);
+            margin-top: 2px;
+        }
+        
+        .substituicao-original {
+            text-decoration: line-through;
+            color: var(--gray);
+        }
+        
+        .empty-state {
+            text-align: center;
+            padding: 40px 20px;
+            color: var(--gray);
+        }
+        
+        .empty-state i {
+            font-size: 3rem;
+            margin-bottom: 15px;
+            opacity: 0.5;
+        }
+        
+        .back-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 12px 20px;
+            background: var(--primary-light);
+            color: var(--primary);
+            text-decoration: none;
+            border-radius: 6px;
+            transition: all 0.2s ease;
+            font-weight: 500;
+            margin-top: 20px;
+        }
+        
+        .back-link:hover {
+            background: var(--primary);
+            color: white;
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(26, 115, 232, 0.3);
+        }
+        
+        @media (max-width: 768px) {
+            body {
+                background: #f5f7fa;
+            }
+            
+            .container {
+                padding: 15px;
+            }
+            
+            table {
+                font-size: 0.9rem;
+            }
+            
+            th, td {
+                padding: 8px 6px;
+            }
+            
+            .profissional-cell {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 4px;
+            }
+            
+            .avatar {
+                width: 24px;
+                height: 24px;
+                font-size: 0.7rem;
+            }
+        }
+        
+        @media (max-width: 480px) {
+            .container {
+                padding: 10px;
+            }
+            
+            h1 {
+                font-size: 1.5rem;
+            }
+            
+            h2 {
+                font-size: 1.1rem;
+            }
+            
+            table {
+                font-size: 0.8rem;
+            }
+            
+            .table-container {
+                overflow-x: auto;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <div class="logo">
+                <div class="logo-icon">E360</div>
+                <h1>Escalas Consolidadas</h1>
+            </div>
+        </header>
+        
+        {% if escalas_por_data %}
+            {% for data, escalas_data in escalas_por_data.items %}
+            <div class="escala-section">
+                <h2>
+                    <span class="date-badge">{{ data|date:"d/m" }}</span>
+                    {{ data|date:"l" }}, {{ data|date:"d \\d\\e F \\d\\e Y" }}
+                </h2>
+                <div class="table-container">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Horário</th>
+                                <th>Profissional</th>
+                                <th>Cargo</th>
+                                <th>Status</th>
+                                <th>Tipo</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for escala in escalas_data %}
+                            <tr>
+                                <td class="horario-cell">{{ escala.id_plantao.hora_inicio }} - {{ escala.id_plantao.hora_fim }}</td>
+                                <td>
+                                    <div class="profissional-cell">
+                                        <div class="avatar">
+                                            {{ escala.profissional_atual.nome|slice:":2"|upper }}
+                                        </div>
+                                        <div class="profissional-info">
+                                            <span class="profissional-nome">
+                                                {{ escala.profissional_atual.nome }}
+                                                {% if escala.substituicao_aprovada %}
+                                                    <span class="tag-escala tag-substituicao">SUBSTITUIÇÃO</span>
+                                                {% elif escala.substituicao_pendente %}
+                                                    <span class="tag-escala tag-pendente">PENDENTE</span>
+                                                {% else %}
+                                                    <span class="tag-escala tag-normal">NORMAL</span>
+                                                {% endif %}
+                                            </span>
+                                            <span class="profissional-email">{{ escala.profissional_atual.email }}</span>
+                                            
+                                            {% if escala.substituicao_aprovada or escala.substituicao_pendente %}
+                                                <div class="substituicao-info">
+                                                    <span class="substituicao-original">
+                                                        Original: {{ escala.id_profissional.nome }}
+                                                    </span>
+                                                </div>
+                                            {% endif %}
+                                        </div>
+                                    </div>
+                                </td>
+                                <td>
+                                    <span class="cargo-cell">{{ escala.profissional_atual.cargo }}</span>
+                                </td>
+                                <td>
+                                    {% if escala.substituicao_aprovada %}
+                                        <span class="status-substituicao-aprovada">Substituição Aprovada</span>
+                                    {% elif escala.substituicao_pendente %}
+                                        <span class="status-substituicao-pendente">Substituição Pendente</span>
+                                    {% elif escala.status == 'ativo' %}
+                                        <span class="status-ativo">Ativo</span>
+                                    {% elif escala.status == 'confirmado' or escala.status == 'Confirmado' %}
+                                        <span class="status-ativo">Confirmado</span>
+                                    {% elif escala.status == 'pendente' or escala.status == 'Pendente' %}
+                                        <span class="status-substituicao-pendente">Pendente</span>
+                                    {% elif escala.status == 'cancelado' or escala.status == 'Cancelado' %}
+                                        <span class="status-cancelado">Cancelado</span>
+                                    {% elif escala.status == 'substituido' %}
+                                        <span class="status-substituicao-aprovada">Substituído</span>
+                                    {% else %}
+                                        <span class="status-ativo">{{ escala.status }}</span>
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    {% if escala.substituicao_aprovada %}
+                                        <span class="tag-escala tag-substituicao">✅ Aprovada</span>
+                                    {% elif escala.substituicao_pendente %}
+                                        <span class="tag-escala tag-pendente">⏳ Pendente</span>
+                                    {% else %}
+                                        <span class="tag-escala tag-normal">📅 Normal</span>
+                                    {% endif %}
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            {% endfor %}
+        {% else %}
+            <div class="empty-state">
+                <div>📅</div>
+                <h3>Nenhuma escala encontrada</h3>
+                <p>Não há escalas ativas no momento.</p>
+            </div>
+        {% endif %}
+
+        <a href="{% url 'escala360:dashboard' %}" class="back-link">
+            ← Voltar ao Dashboard
+        </a>
+    </div>
+
+    <script>
+        // Adicionar formatação de datas em português
+        document.addEventListener('DOMContentLoaded', function() {
+            // Converter nomes dos dias da semana para português
+            const dayMap = {
+                'Monday': 'Segunda-feira',
+                'Tuesday': 'Terça-feira',
+                'Wednesday': 'Quarta-feira',
+                'Thursday': 'Quinta-feira',
+                'Friday': 'Sexta-feira',
+                'Saturday': 'Sábado',
+                'Sunday': 'Domingo'
+            };
+            
+            // Converter meses para português
+            const monthMap = {
+                'January': 'janeiro',
+                'February': 'fevereiro',
+                'March': 'março',
+                'April': 'abril',
+                'May': 'maio',
+                'June': 'junho',
+                'July': 'julho',
+                'August': 'agosto',
+                'September': 'setembro',
+                'October': 'outubro',
+                'November': 'novembro',
+                'December': 'dezembro'
+            };
+            
+            // Atualizar os cabeçalhos das datas
+            document.querySelectorAll('h2').forEach(header => {
+                let text = header.innerHTML;
+                
+                // Substituir dias da semana
+                for (const [en, pt] of Object.entries(dayMap)) {
+                    text = text.replace(en, pt);
+                }
+                
+                // Substituir meses
+                for (const [en, pt] of Object.entries(monthMap)) {
+                    text = text.replace(en, pt);
+                }
+                
+                header.innerHTML = text;
+            });
+        });
+    </script>
+</body>
+</html>

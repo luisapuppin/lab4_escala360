@@ -1,0 +1,597 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Profissionais com Carga Horária Excedida - Escala360</title>
+    <style>
+        :root {
+            --primary: #1a73e8;
+            --primary-light: #e8f0fe;
+            --secondary: #34a853;
+            --warning: #f9ab00;
+            --danger: #ea4335;
+            --light: #f8f9fa;
+            --dark: #202124;
+            --gray: #5f6368;
+            --border-radius: 8px;
+            --shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+        }
+        
+        body {
+            background: linear-gradient(90deg, var(--primary-light) 0%, var(--primary-light) 10%, #f5f7fa 10%, #f5f7fa 90%, var(--primary-light) 90%, var(--primary-light) 100%);
+            color: var(--dark);
+            line-height: 1.6;
+            min-height: 100vh;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid #e0e0e0;
+        }
+        
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .logo-icon {
+            width: 40px;
+            height: 40px;
+            background: var(--primary);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+        }
+        
+        h1 {
+            color: var(--primary);
+            font-size: 1.8rem;
+            font-weight: 600;
+        }
+        
+        .filtro-semana {
+            background: white;
+            padding: 20px;
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow);
+            margin-bottom: 20px;
+        }
+        
+        .filtro-header {
+            display: flex;
+            justify-content: between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+        
+        .filtro-header h2 {
+            color: var(--primary);
+            font-size: 1.3rem;
+            margin: 0;
+        }
+        
+        .filtro-controles {
+            display: flex;
+            gap: 15px;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+        
+        .form-group {
+            margin-bottom: 0;
+        }
+        
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: 600;
+            color: var(--dark);
+            font-size: 0.9rem;
+        }
+        
+        .form-control {
+            padding: 10px 12px;
+            border: 1px solid #ddd;
+            border-radius: var(--border-radius);
+            font-size: 14px;
+            min-width: 150px;
+        }
+        
+        .btn {
+            background: var(--primary);
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: var(--border-radius);
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 600;
+            transition: all 0.2s ease;
+            align-self: flex-end;
+        }
+        
+        .btn:hover {
+            background: #1557b0;
+        }
+        
+        .periodo-info {
+            background: white;
+            padding: 15px 20px;
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow);
+            margin-bottom: 20px;
+            border-left: 4px solid var(--warning);
+        }
+        
+        .stat-card {
+            background: white;
+            padding: 20px;
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow);
+            margin-bottom: 25px;
+            border-left: 4px solid var(--danger);
+        }
+        
+        .profissional-card {
+            background: white;
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow);
+            padding: 20px;
+            margin-bottom: 20px;
+            border: 1px solid #f0f0f0;
+        }
+        
+        .profissional-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 15px;
+        }
+        
+        .profissional-info h3 {
+            color: var(--dark);
+            margin-bottom: 5px;
+            font-size: 1.2rem;
+        }
+        
+        .profissional-info p {
+            color: var(--gray);
+            font-size: 0.9rem;
+        }
+        
+        .alert-status {
+            text-align: right;
+        }
+        
+        .badge {
+            background: var(--danger);
+            color: white;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            display: inline-block;
+            margin-bottom: 8px;
+        }
+        
+        .alert {
+            color: var(--danger);
+            font-weight: bold;
+        }
+        
+        .progress-bar {
+            background: #e9ecef;
+            border-radius: 10px;
+            height: 20px;
+            margin: 15px 0;
+            overflow: hidden;
+        }
+        
+        .progress-fill {
+            background: var(--danger);
+            height: 100%;
+            border-radius: 10px;
+            text-align: center;
+            color: white;
+            font-size: 12px;
+            line-height: 20px;
+            font-weight: 600;
+        }
+        
+        details {
+            margin-top: 15px;
+        }
+        
+        summary {
+            cursor: pointer;
+            padding: 10px;
+            background: var(--primary-light);
+            border-radius: 6px;
+            font-weight: 500;
+            color: var(--primary);
+        }
+        
+        .plantao-list {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 6px;
+            margin-top: 10px;
+        }
+        
+        .plantao-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 8px 0;
+            border-bottom: 1px solid #e9ecef;
+        }
+        
+        .plantao-item:last-child {
+            border-bottom: none;
+            font-weight: bold;
+            border-top: 2px solid var(--primary);
+            padding-top: 12px;
+            margin-top: 8px;
+        }
+        
+        .no-excedidos {
+            background: white;
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow);
+            padding: 40px 20px;
+            text-align: center;
+            border: 2px solid var(--secondary);
+        }
+        
+        .no-excedidos h3 {
+            color: var(--secondary);
+            margin-bottom: 10px;
+        }
+        
+        .no-excedidos p {
+            color: var(--gray);
+        }
+        
+        .nav-links {
+            margin-top: 30px;
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+        
+        .nav-links a {
+            display: inline-block;
+            padding: 12px 20px;
+            background: var(--primary-light);
+            color: var(--primary);
+            text-decoration: none;
+            border-radius: 6px;
+            transition: all 0.2s ease;
+            font-weight: 500;
+        }
+        
+        .nav-links a:hover {
+            background: var(--primary);
+            color: white;
+        }
+        
+        .loading {
+            text-align: center;
+            padding: 40px 20px;
+            color: var(--gray);
+        }
+        
+        @media (max-width: 768px) {
+            body {
+                background: #f5f7fa;
+            }
+            
+            .container {
+                padding: 15px;
+            }
+            
+            .filtro-header {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 15px;
+            }
+            
+            .filtro-controles {
+                width: 100%;
+                justify-content: space-between;
+            }
+            
+            .profissional-header {
+                flex-direction: column;
+                gap: 15px;
+            }
+            
+            .alert-status {
+                text-align: left;
+            }
+            
+            .nav-links {
+                flex-direction: column;
+            }
+        }
+        
+        @media (max-width: 480px) {
+            .container {
+                padding: 10px;
+            }
+            
+            h1 {
+                font-size: 1.5rem;
+            }
+            
+            .filtro-controles {
+                flex-direction: column;
+                align-items: stretch;
+            }
+            
+            .form-control {
+                min-width: auto;
+            }
+            
+            .btn {
+                align-self: stretch;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <div class="logo">
+                <div class="logo-icon">E360</div>
+                <h1>Profissionais com Carga Horária Excedida</h1>
+            </div>
+        </header>
+        
+        <div class="filtro-semana">
+            <div class="filtro-header">
+                <h2>📅 Selecione a Semana para Análise</h2>
+            </div>
+            <form method="get" id="filtroForm">
+                <div class="filtro-controles">
+                    <div class="form-group">
+                        <label for="data_referencia">Data de Referência</label>
+                        <input type="date" 
+                               id="data_referencia" 
+                               name="data_referencia" 
+                               value="{{ data_selecionada|date:'Y-m-d' }}"
+                               class="form-control"
+                               required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="semana_selecao">Seleção Rápida</label>
+                        <select id="semana_selecao" class="form-control" onchange="selecionarSemana(this.value)">
+                            <option value="">-- Escolha uma semana --</option>
+                            <option value="atual" {% if semana_atual %}selected{% endif %}>Semana Atual</option>
+                            <option value="proxima">Próxima Semana</option>
+                            <option value="anterior">Semana Anterior</option>
+                            <option value="personalizada">Data Personalizada</option>
+                        </select>
+                    </div>
+                    
+                    <button type="submit" class="btn">🔍 Analisar Semana</button>
+                </div>
+            </form>
+        </div>
+
+        <div class="periodo-info">
+            <p><strong>📅 Período Analisado:</strong> <span id="periodo-formatado">{{ periodo_semana }}</span></p>
+            <p><strong>👥 Total de Profissionais com Carga Excedida:</strong> <span class="alert">{{ total_excedidos }}</span></p>
+        </div>
+
+        {% if carregando %}
+        <div class="loading">
+            <p>🔍 Analisando carga horária...</p>
+        </div>
+        {% else %}
+            {% if profissionais_excedidos %}
+                <div class="stat-card">
+                    <h3>📊 Resumo da Análise</h3>
+                    <p><strong>{{ total_excedidos }}</strong> profissional{{ total_excedidos|pluralize:"es" }} com carga horária excedida nesta semana</p>
+                </div>
+
+                {% for item in profissionais_excedidos %}
+                <div class="profissional-card">
+                    <div class="profissional-header">
+                        <div class="profissional-info">
+                            <h3>{{ item.profissional.nome }}</h3>
+                            <p>{{ item.profissional.cargo }} | {{ item.profissional.email }}</p>
+                        </div>
+                        <div class="alert-status">
+                            <span class="badge">CARGA EXCEDIDA</span>
+                            <div class="alert">{{ item.horas_trabalhadas }}h / {{ item.carga_maxima }}h</div>
+                            <div class="alert">+{{ item.diferenca }}h excedidas</div>
+                        </div>
+                    </div>
+
+                    <div class="progress-bar">
+                        <div class="progress-fill" style="width: {% if item.percentual > 100 %}100%{% else %}{{ item.percentual }}%{% endif %};">
+                            {{ item.percentual }}%
+                        </div>
+                    </div>
+
+                    <details>
+                        <summary>📋 Ver plantões da semana ({{ item.plantoes_semana|length }} plantões)</summary>
+                        <div class="plantao-list">
+                            {% for plantao in item.plantoes_semana %}
+                            <div class="plantao-item">
+                                <span class="data-formatada">{{ plantao.data|date:"d/m/Y" }} - {{ plantao.horario }}</span>
+                                <span>{{ plantao.horas }}h</span>
+                            </div>
+                            {% endfor %}
+                            <div class="plantao-item">
+                                <span>Total da semana:</span>
+                                <span>{{ item.horas_trabalhadas }}h</span>
+                            </div>
+                        </div>
+                    </details>
+                </div>
+                {% endfor %}
+            {% else %}
+                <div class="no-excedidos">
+                    <h3>✅ Nenhum profissional com carga horária excedida</h3>
+                    <p>Todos os profissionais estão dentro dos limites de carga horária semanal no período de <strong id="periodo-formatado-texto">{{ periodo_semana }}</strong>.</p>
+                </div>
+            {% endif %}
+        {% endif %}
+
+        <div class="nav-links">
+            <a href="{% url 'escala360:dashboard' %}">← Voltar ao Dashboard</a>
+            <a href="{% url 'escala360:lista_profissionais' %}">👥 Lista de Profissionais</a>
+            <a href="{% url 'escala360:visualizar_escalas' %}">📅 Visualizar Escalas</a>
+        </div>
+    </div>
+
+    <script>
+        function selecionarSemana(tipo) {
+            const dataInput = document.getElementById('data_referencia');
+            const hoje = new Date();
+            
+            switch(tipo) {
+                case 'atual':
+                    // Semana atual (segunda-feira da semana atual)
+                    const segundaAtual = new Date(hoje);
+                    segundaAtual.setDate(hoje.getDate() - hoje.getDay() + (hoje.getDay() === 0 ? -6 : 1));
+                    dataInput.value = segundaAtual.toISOString().split('T')[0];
+                    break;
+                    
+                case 'proxima':
+                    // Próxima semana (segunda-feira da próxima semana)
+                    const proximaSegunda = new Date(hoje);
+                    proximaSegunda.setDate(hoje.getDate() - hoje.getDay() + (hoje.getDay() === 0 ? -6 : 1) + 7);
+                    dataInput.value = proximaSegunda.toISOString().split('T')[0];
+                    break;
+                    
+                case 'anterior':
+                    // Semana anterior (segunda-feira da semana anterior)
+                    const anteriorSegunda = new Date(hoje);
+                    anteriorSegunda.setDate(hoje.getDate() - hoje.getDay() + (hoje.getDay() === 0 ? -6 : 1) - 7);
+                    dataInput.value = anteriorSegunda.toISOString().split('T')[0];
+                    break;
+                    
+                case 'personalizada':
+                    // Foca no input para data personalizada
+                    dataInput.focus();
+                    break;
+            }
+            
+            // Se não for personalizada, submeter automaticamente
+            if (tipo !== 'personalizada' && tipo !== '') {
+                document.getElementById('filtroForm').submit();
+            }
+        }
+
+        // Função para formatar datas no padrão DD/MM/AAAA
+        function formatarDataBR(dataString) {
+            if (!dataString) return '';
+            
+            // Se já estiver no formato DD/MM/AAAA, retorna como está
+            if (dataString.includes('/')) {
+                return dataString;
+            }
+            
+            // Formatar de AAAA-MM-DD para DD/MM/AAAA
+            const partes = dataString.split('-');
+            if (partes.length === 3) {
+                return `${partes[2]}/${partes[1]}/${partes[0]}`;
+            }
+            
+            return dataString;
+        }
+
+        // Função para formatar período (ex: "2025-07-07 a 2025-07-13" -> "07/07/2025 a 13/07/2025")
+        function formatarPeriodoBR(periodoString) {
+            if (!periodoString) return '';
+            
+            // Dividir a string do período
+            const partes = periodoString.split(' a ');
+            if (partes.length === 2) {
+                const inicioFormatado = formatarDataBR(partes[0].trim());
+                const fimFormatado = formatarDataBR(partes[1].trim());
+                return `${inicioFormatado} a ${fimFormatado}`;
+            }
+            
+            return periodoString;
+        }
+
+        // Aplicar formatação quando a página carregar
+        document.addEventListener('DOMContentLoaded', function() {
+            // Formatar o período principal
+            const periodoElement = document.getElementById('periodo-formatado');
+            if (periodoElement) {
+                periodoElement.textContent = formatarPeriodoBR(periodoElement.textContent);
+            }
+            
+            // Formatar o período no texto do estado vazio
+            const periodoTxtElement = document.getElementById('periodo-formatado-texto');
+            if (periodoTxtElement) {
+                periodoTxtElement.textContent = formatarPeriodoBR(periodoTxtElement.textContent);
+            }
+            
+            // Formatar todas as datas nos plantões
+            document.querySelectorAll('.data-formatada').forEach(element => {
+                const texto = element.textContent;
+                // Extrair a parte da data (antes do " - ")
+                const partes = texto.split(' - ');
+                if (partes.length === 2) {
+                    const dataFormatada = formatarDataBR(partes[0].trim());
+                    element.textContent = `${dataFormatada} - ${partes[1]}`;
+                }
+            });
+
+            // Preencher a seleção rápida baseado na data atual
+            const dataInput = document.getElementById('data_referencia');
+            const hoje = new Date();
+            const dataSelecionada = new Date(dataInput.value);
+            
+            // Calcular segunda-feira da semana atual
+            const segundaAtual = new Date(hoje);
+            segundaAtual.setDate(hoje.getDate() - hoje.getDay() + (hoje.getDay() === 0 ? -6 : 1));
+            
+            // Calcular segunda-feira da data selecionada
+            const segundaSelecionada = new Date(dataSelecionada);
+            segundaSelecionada.setDate(dataSelecionada.getDate() - dataSelecionada.getDay() + (dataSelecionada.getDay() === 0 ? -6 : 1));
+            
+            // Verificar qual semana está selecionada
+            const semanaSelect = document.getElementById('semana_selecao');
+            if (segundaSelecionada.getTime() === segundaAtual.getTime()) {
+                semanaSelect.value = 'atual';
+            } else {
+                semanaSelect.value = 'personalizada';
+            }
+        });
+
+        // Adicionar loading state no submit
+        document.getElementById('filtroForm').addEventListener('submit', function() {
+            const btn = this.querySelector('button[type="submit"]');
+            btn.innerHTML = '⏳ Analisando...';
+            btn.disabled = true;
+        });
+    </script>
+</body>
+</html>
