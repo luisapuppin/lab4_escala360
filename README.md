@@ -11,8 +11,20 @@ O projeto utiliza linguagem Python e o framework Django.
 
 ## Migração de dados
 O projeto apresenta um banco de dados pré-configurado para visualização. Para realizar a migração do modelo de dados e popular os dados faça os seguintes comandos no terminal:
-1. python manage.py makemigrations
-1. python manage.py migrate
-1. python manage.py criar_funcoes_locais
-1. python manage.py importar_dados_sql
-1. python manage.py runserver
+
+```bash
+python manage.py makemigrations
+
+python manage.py migrate
+
+python manage.py criar_funcoes_locais
+
+python manage.py importar_dados_sql
+```
+
+## Iniciar o servidor
+Para iniciar o servidor do Django escreva o seguinte comando no terminal
+
+```bash
+python manage.py runserver
+```
