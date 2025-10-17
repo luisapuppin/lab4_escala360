@@ -69,6 +69,20 @@
             font-weight: 600;
         }
         
+        .info-box {
+            background: white;
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow);
+            padding: 20px;
+            margin-bottom: 25px;
+            border-left: 4px solid var(--warning);
+        }
+        
+        .info-box h3 {
+            color: var(--warning);
+            margin-bottom: 10px;
+        }
+        
         .table-container {
             background: white;
             border-radius: var(--border-radius);
@@ -106,16 +120,105 @@
         .status-pendente {
             color: var(--warning);
             font-weight: 600;
+            background: #fef7e0;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 0.8rem;
         }
         
         .status-aprovado {
             color: var(--secondary);
             font-weight: 600;
+            background: #e6f4ea;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 0.8rem;
         }
         
         .status-rejeitado {
             color: var(--danger);
             font-weight: 600;
+            background: #fce8e6;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 0.8rem;
+        }
+        
+        .btn {
+            padding: 8px 12px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 0.8rem;
+            font-weight: 600;
+            transition: all 0.2s ease;
+            margin: 2px;
+        }
+        
+        .btn-approve {
+            background: var(--secondary);
+            color: white;
+        }
+        
+        .btn-approve:hover {
+            background: #2d8c47;
+        }
+        
+        .btn-reject {
+            background: var(--danger);
+            color: white;
+        }
+        
+        .btn-reject:hover {
+            background: #c5221f;
+        }
+        
+        .btn:disabled {
+            background: var(--gray);
+            cursor: not-allowed;
+        }
+        
+        .actions-cell {
+            display: flex;
+            gap: 5px;
+            flex-wrap: wrap;
+        }
+        
+        .plantao-info {
+            display: flex;
+            flex-direction: column;
+            gap: 2px;
+        }
+        
+        .plantao-data {
+            font-weight: 500;
+            color: var(--dark);
+        }
+        
+        .plantao-horario {
+            font-size: 0.8rem;
+            color: var(--gray);
+        }
+        
+        .profissional-info {
+            display: flex;
+            flex-direction: column;
+            gap: 2px;
+        }
+        
+        .profissional-nome {
+            font-weight: 500;
+        }
+        
+        .profissional-cargo {
+            font-size: 0.8rem;
+            color: var(--gray);
+        }
+        
+        .substituicao-arrow {
+            color: var(--warning);
+            font-weight: bold;
+            margin: 0 5px;
         }
         
         .empty-message {
@@ -123,6 +226,29 @@
             padding: 40px 20px;
             color: var(--gray);
             font-style: italic;
+        }
+        
+        .messages {
+            margin: 20px 0;
+        }
+        
+        .alert {
+            padding: 15px;
+            border-radius: var(--border-radius);
+            margin-bottom: 15px;
+            border-left: 4px solid;
+        }
+        
+        .alert-success {
+            background: #d4edda;
+            color: #155724;
+            border-left-color: var(--secondary);
+        }
+        
+        .alert-error {
+            background: #f8d7da;
+            color: #721c24;
+            border-left-color: var(--danger);
         }
         
         .back-link {
@@ -158,6 +284,15 @@
             th, td {
                 padding: 8px 6px;
             }
+            
+            .actions-cell {
+                flex-direction: column;
+            }
+            
+            .btn {
+                width: 100%;
+                margin: 2px 0;
+            }
         }
         
         @media (max-width: 480px) {
@@ -172,6 +307,10 @@
             table {
                 font-size: 0.8rem;
             }
+            
+            .table-container {
+                overflow-x: auto;
+            }
         }
     </style>
 </head>
@@ -184,41 +323,90 @@
             </div>
         </header>
         
+        <div class="info-box">
+            <h3>📋 Ações do Supervisor</h3>
+            <p>Como supervisor, você pode aprovar ou rejeitar as solicitações de substituição. Aprove apenas se o substituto estiver disponível e dentro da carga horária permitida.</p>
+        </div>
+
+        {% if messages %}
+        <div class="messages">
+            {% for message in messages %}
+            <div class="alert alert-{{ message.tags }}">{{ message }}</div>
+            {% endfor %}
+        </div>
+        {% endif %}
+
         <div class="table-container">
             <table>
                 <thead>
                     <tr>
                         <th>Plantão</th>
-                        <th>Escala</th>
-                        <th>Solicitante</th>
-                        <th>Substituto</th>
+                        <th>Substituição</th>
                         <th>Data Solicitação</th>
                         <th>Status</th>
+                        <th>Ações</th>
                     </tr>
                 </thead>
                 <tbody>
                     {% for substituicao in substituicoes %}
                     <tr>
-                        <td>{{ substituicao.id_escala_original.id_plantao.id }}</td>
-                        <td>{{ substituicao.id_escala_original.id_plantao.data }}</td>
-                        <td>{{ substituicao.id_profissional_solicitante.nome }}</td>
-                        <td>{{ substituicao.id_profissional_substituto.nome }}</td>
-                        <td>{{ substituicao.data_solicitacao }}</td>
                         <td>
-                            {% if substituicao.get_status_display == 'Pendente' or substituicao.status == 'pendente' %}
-                                <span class="status-pendente">{{ substituicao.get_status_display }}</span>
-                            {% elif substituicao.get_status_display == 'Aprovado' or substituicao.status == 'aprovado' %}
-                                <span class="status-aprovado">{{ substituicao.get_status_display }}</span>
-                            {% elif substituicao.get_status_display == 'Rejeitado' or substituicao.status == 'rejeitado' %}
-                                <span class="status-rejeitado">{{ substituicao.get_status_display }}</span>
+                            <div class="plantao-info">
+                                <span class="plantao-data">{{ substituicao.id_escala_original.id_plantao.data|date:"d/m/Y" }}</span>
+                                <span class="plantao-horario">{{ substituicao.id_escala_original.id_plantao.hora_inicio }} - {{ substituicao.id_escala_original.id_plantao.hora_fim }}</span>
+                                <small>Local: {{ substituicao.id_escala_original.id_plantao.local.nome }}</small>
+                            </div>
+                        </td>
+                        <td>
+                            <div class="profissional-info">
+                                <div>
+                                    <span class="profissional-nome">{{ substituicao.id_profissional_solicitante.nome }}</span>
+                                    <span class="substituicao-arrow">→</span>
+                                    <span class="profissional-nome">{{ substituicao.id_profissional_substituto.nome }}</span>
+                                </div>
+                                <div>
+                                    <span class="profissional-cargo">{{ substituicao.id_profissional_solicitante.cargo }}</span>
+                                    <span class="substituicao-arrow">→</span>
+                                    <span class="profissional-cargo">{{ substituicao.id_profissional_substituto.cargo }}</span>
+                                </div>
+                            </div>
+                        </td>
+                        <td>{{ substituicao.data_solicitacao|date:"d/m/Y H:i" }}</td>
+                        <td>
+                            {% if substituicao.status == 'pendente' %}
+                                <span class="status-pendente">⏳ Pendente</span>
+                            {% elif substituicao.status == 'aprovado' %}
+                                <span class="status-aprovado">✅ Aprovado</span>
+                            {% elif substituicao.status == 'rejeitado' %}
+                                <span class="status-rejeitado">❌ Rejeitado</span>
                             {% else %}
                                 {{ substituicao.get_status_display }}
+                            {% endif %}
+                        </td>
+                        <td class="actions-cell">
+                            {% if substituicao.status == 'pendente' %}
+                                <form method="post" action="{% url 'escala360:aprovar_substituicao' substituicao.id %}" style="display: inline;">
+                                    {% csrf_token %}
+                                    <button type="submit" class="btn btn-approve" onclick="return confirm('Tem certeza que deseja APROVAR esta substituição?')">
+                                        ✅ Aprovar
+                                    </button>
+                                </form>
+                                <form method="post" action="{% url 'escala360:rejeitar_substituicao' substituicao.id %}" style="display: inline;">
+                                    {% csrf_token %}
+                                    <button type="submit" class="btn btn-reject" onclick="return confirm('Tem certeza que deseja REJEITAR esta substituição?')">
+                                        ❌ Rejeitar
+                                    </button>
+                                </form>
+                            {% else %}
+                                <span style="color: var(--gray); font-size: 0.8rem;">Ação concluída</span>
                             {% endif %}
                         </td>
                     </tr>
                     {% empty %}
                     <tr>
-                        <td colspan="6" class="empty-message">Nenhuma substituição pendente</td>
+                        <td colspan="5" class="empty-message">
+                            🎉 Nenhuma substituição pendente de aprovação
+                        </td>
                     </tr>
                     {% endfor %}
                 </tbody>
@@ -226,6 +414,36 @@
         </div>
 
         <a href="{% url 'escala360:dashboard' %}" class="back-link">← Voltar ao Dashboard</a>
+        <a href="{% url 'escala360:visualizar_escalas' %}" class="back-link">📅 Ver Todas as Escalas</a>
     </div>
+
+    <script>
+        // Adicionar confirmação para ações
+        document.addEventListener('DOMContentLoaded', function() {
+            // Adicionar loading state nos botões
+            const forms = document.querySelectorAll('form');
+            forms.forEach(form => {
+                form.addEventListener('submit', function(e) {
+                    const button = this.querySelector('button[type="submit"]');
+                    if (button) {
+                        button.innerHTML = '⏳ Processando...';
+                        button.disabled = true;
+                    }
+                });
+            });
+        });
+
+        // Auto-hide messages after 5 seconds
+        setTimeout(() => {
+            const messages = document.querySelector('.messages');
+            if (messages) {
+                messages.style.transition = 'opacity 0.5s ease';
+                messages.style.opacity = '0';
+                setTimeout(() => {
+                    messages.style.display = 'none';
+                }, 500);
+            }
+        }, 5000);
+    </script>
 </body>
 </html>

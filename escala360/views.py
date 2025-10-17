@@ -133,11 +133,12 @@ def visualizar_escalas(request):
 
 def substituicoes_pendentes(request):
     """Lista de substituições pendentes de aprovação"""
+    # Buscar todas as substituições ordenadas pela data do plantão (mais antiga primeiro)
     substituicoes = Substituicao.objects.select_related(
-        'id_escala_original',
+        'id_escala_original__id_plantao__local',
         'id_profissional_solicitante',
         'id_profissional_substituto'
-    ).filter(status='pendente')
+    ).order_by('id_escala_original__id_plantao__data', 'id_escala_original__id_plantao__hora_inicio')
     
     context = {
         'substituicoes': substituicoes,
@@ -594,4 +595,66 @@ def buscar_escalas_profissional(request, profissional_id):
         })
     
     return JsonResponse(results, safe=False)
+
+def aprovar_substituicao(request, substituicao_id):
+    """View para aprovar uma substituição"""
+    if request.method == 'POST':
+        substituicao = get_object_or_404(Substituicao, id=substituicao_id)
+        
+        # Verificar se a substituição ainda está pendente
+        if substituicao.status != 'pendente':
+            messages.error(request, 'Esta substituição já foi processada.')
+            return redirect('escala360:substituicoes_pendentes')
+        
+        # Verificar conflitos de horário do substituto
+        plantao_original = substituicao.id_escala_original.id_plantao
+        if verificar_conflito_horario(substituicao.id_profissional_substituto, plantao_original):
+            messages.error(request, f'O profissional {substituicao.id_profissional_substituto.nome} já tem um plantão no mesmo horário!')
+            return redirect('escala360:substituicoes_pendentes')
+        
+        # Verificar carga horária do substituto
+        if verificar_carga_horaria_excedida(substituicao.id_profissional_substituto, plantao_original):
+            messages.warning(request, f'Atenção: O profissional {substituicao.id_profissional_substituto.nome} pode exceder a carga horária semanal.')
+        
+        # Aprovar a substituição
+        substituicao.status = 'aprovado'
+        substituicao.save()
+        
+        # Registrar auditoria
+        Auditoria.objects.create(
+            entidade='substituicao',
+            id_entidade=substituicao.id,
+            acao='aprovado',
+            usuario=request.user.username if request.user.is_authenticated else 'supervisor'
+        )
+        
+        messages.success(request, f'Substituição aprovada com sucesso! {substituicao.id_profissional_solicitante.nome} → {substituicao.id_profissional_substituto.nome}')
+    
+    return redirect('escala360:substituicoes_pendentes')
+
+def rejeitar_substituicao(request, substituicao_id):
+    """View para rejeitar uma substituição"""
+    if request.method == 'POST':
+        substituicao = get_object_or_404(Substituicao, id=substituicao_id)
+        
+        # Verificar se a substituição ainda está pendente
+        if substituicao.status != 'pendente':
+            messages.error(request, 'Esta substituição já foi processada.')
+            return redirect('escala360:substituicoes_pendentes')
+        
+        # Rejeitar a substituição
+        substituicao.status = 'rejeitado'
+        substituicao.save()
+        
+        # Registrar auditoria
+        Auditoria.objects.create(
+            entidade='substituicao',
+            id_entidade=substituicao.id,
+            acao='rejeitado',
+            usuario=request.user.username if request.user.is_authenticated else 'supervisor'
+        )
+        
+        messages.success(request, f'Substituição rejeitada. {substituicao.id_profissional_solicitante.nome} permanece no plantão.')
+    
+    return redirect('escala360:substituicoes_pendentes')
 

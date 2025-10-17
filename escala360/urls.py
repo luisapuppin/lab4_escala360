@@ -15,4 +15,7 @@ urlpatterns = [
     path('buscar-profissionais/', views.buscar_profissionais, name='buscar_profissionais'),
     path('buscar-profissionais-disponiveis/', views.buscar_profissionais_disponiveis, name='buscar_profissionais_disponiveis'),
     path('buscar-escalas/<int:profissional_id>/', views.buscar_escalas_profissional, name='buscar_escalas_profissional'),
+    path('substituicoes/pendentes/', views.substituicoes_pendentes, name='substituicoes_pendentes'),
+    path('substituicoes/aprovar/<int:substituicao_id>/', views.aprovar_substituicao, name='aprovar_substituicao'),
+    path('substituicoes/rejeitar/<int:substituicao_id>/', views.rejeitar_substituicao, name='rejeitar_substituicao'),
 ]
