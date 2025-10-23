@@ -14,3 +14,6 @@ from django.core.wsgi import get_wsgi_application
 os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'escala360_project.settings')
 
 application = get_wsgi_application()
+
+# Apenas para build no vercel
+app = application
