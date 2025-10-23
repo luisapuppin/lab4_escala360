@@ -27,6 +27,7 @@ DEBUG = True
 
 ALLOWED_HOSTS = [
     'lab4-escala360.vercel.app', # Para a aplicação funcionar no vercel
+    '.vercel.app', # Para a aplicação funcionar no vercel
 ]
 
 
