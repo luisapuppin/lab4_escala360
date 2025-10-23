@@ -25,7 +25,9 @@ SECRET_KEY = 'django-insecure-%vo^+_42ojaz-b0a(*qfh*g=@-59-_2-i%)rcv%-q&0718u^(e
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = [
+    'lab4-escala360.vercel.app', # Para a aplicação funcionar no vercel
+]
 
 
 # Application definition
